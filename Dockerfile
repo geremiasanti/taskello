@@ -19,7 +19,7 @@ FROM base AS build
 
 # Install packages needed to build gems and node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential curl git libpq-dev libvips node-gyp pkg-config python-is-python3
+    apt-get install --no-install-recommends -y build-essential curl git libpq-dev libvips node-gyp pkg-config python-is-python3 dos2unix
 
 # Install JavaScript dependencies
 ARG NODE_VERSION=18.20.4
@@ -43,8 +43,8 @@ RUN yarn install --frozen-lockfile
 # Copy application code
 COPY . .
 
-# Ensure binstubs are executable
-RUN chmod +x bin/*
+# Fix Windows/WSL line endings and ensure binstubs are executable
+RUN sed -i 's/\r$//' bin/* && chmod +x bin/*
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
