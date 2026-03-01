@@ -1,0 +1,25 @@
+todo_task:
+  title: Buy groceries
+  description: Milk, eggs, bread
+  status: todo
+  priority: high
+  due_date: <%= 5.days.from_now.to_date %>
+  created_at: <%= 3.days.ago %>
+  updated_at: <%= 3.days.ago %>
+
+in_progress_task:
+  title: Write report
+  description: Quarterly summary
+  status: in_progress
+  priority: medium
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= 2.days.ago %>
+
+done_task:
+  title: Clean kitchen
+  description:
+  status: done
+  priority: low
+  due_date: <%= 1.day.ago.to_date %>
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>

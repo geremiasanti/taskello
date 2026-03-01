@@ -137,9 +137,7 @@ GEM
     marcel (1.1.0)
     matrix (0.4.3)
     mini_mime (1.1.5)
-    minitest (6.0.2)
-      drb (~> 2.0)
-      prism (~> 1.5)
+    minitest (5.27.0)
     msgpack (1.8.0)
     mutex_m (0.3.0)
     net-imap (0.6.3)
@@ -293,6 +291,7 @@ DEPENDENCIES
   debug
   jbuilder
   jsbundling-rails
+  minitest (~> 5.20)
   pg (~> 1.1)
   puma (>= 5.0)
   rails (~> 7.1.2)
