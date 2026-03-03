@@ -113,3 +113,27 @@ body {
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--color-bg-secondary); }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+
+/* Toast animation */
+@keyframes slide-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.animate-slide-in { animation: slide-in 0.2s ease-out; }
+
+/* ========================================
+   Responsive
+   ======================================== */
+
+/* Tablet: horizontal scroll for columns */
+@media (max-width: 1024px) {
+  .kanban-columns {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Mobile: single column view */
+@media (max-width: 640px) {
+  body { font-size: 14px; }
+}
