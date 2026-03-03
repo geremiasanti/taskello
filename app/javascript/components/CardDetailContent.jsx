@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import Button from "./ui/Button"
+import RichTextEditor from "./ui/RichTextEditor"
 import CommentSection from "./CommentSection"
 import AttachmentSection from "./AttachmentSection"
 import LabelPicker from "./LabelPicker"
@@ -26,13 +27,11 @@ export default function CardDetailContent({ card, board, onUpdate, onDelete, onR
             className="w-full px-2 py-1 text-base font-semibold bg-[var(--color-input-bg)]
               text-[var(--color-text)] border border-[var(--color-input-border)] rounded-md"
           />
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
+          <RichTextEditor
+            content={description}
+            onChange={setDescription}
             placeholder="Add a description..."
-            className="w-full px-2 py-1 text-sm bg-[var(--color-input-bg)]
-              text-[var(--color-text)] border border-[var(--color-input-border)] rounded-md"
+            members={board?.members}
           />
           <div className="flex gap-2">
             <Button size="sm" onClick={handleSave}>Save</Button>
@@ -53,7 +52,10 @@ export default function CardDetailContent({ card, board, onUpdate, onDelete, onR
             </div>
           </div>
           {card.description && (
-            <p className="text-sm text-[var(--color-text)] mt-2 whitespace-pre-wrap">{card.description}</p>
+            <div
+              className="rendered-html text-sm text-[var(--color-text)] mt-2"
+              dangerouslySetInnerHTML={{ __html: card.description }}
+            />
           )}
         </div>
       )}
@@ -71,7 +73,7 @@ export default function CardDetailContent({ card, board, onUpdate, onDelete, onR
       </div>
 
       <div className="border-t border-[var(--color-border)] pt-3">
-        <CommentSection card={card} onRefresh={onRefresh} />
+        <CommentSection card={card} board={board} onRefresh={onRefresh} />
       </div>
     </div>
   )

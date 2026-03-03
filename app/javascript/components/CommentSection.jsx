@@ -1,21 +1,25 @@
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import api from "../lib/api"
 import Button from "./ui/Button"
 import Avatar from "./ui/Avatar"
+import RichTextEditor from "./ui/RichTextEditor"
 import { useAuthStore } from "../stores/authStore"
 
-export default function CommentSection({ card, onRefresh }) {
+export default function CommentSection({ card, board, onRefresh }) {
   const [body, setBody] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const user = useAuthStore((s) => s.user)
+  const editorRef = useRef(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!body.trim()) return
+    const trimmed = body.replace(/<p><\/p>/g, "").trim()
+    if (!trimmed) return
     setSubmitting(true)
     try {
       await api.post(`/cards/${card.id}/comments`, { comment: { body } })
       setBody("")
+      editorRef.current?.clear()
       onRefresh()
     } finally {
       setSubmitting(false)
@@ -47,21 +51,28 @@ export default function CommentSection({ card, onRefresh }) {
                   </button>
                 )}
               </div>
-              <p className="text-sm text-[var(--color-text)] mt-0.5 whitespace-pre-wrap">{comment.body}</p>
+              <div
+                className="rendered-html text-sm text-[var(--color-text)] mt-0.5"
+                dangerouslySetInnerHTML={{ __html: comment.body }}
+              />
             </div>
           </div>
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <input
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          placeholder="Write a comment... (use @username to mention)"
-          className="flex-1 px-2 py-1 text-sm bg-[var(--color-input-bg)] text-[var(--color-text)]
-            border border-[var(--color-input-border)] rounded-md"
+      <form onSubmit={handleSubmit}>
+        <RichTextEditor
+          ref={editorRef}
+          content=""
+          onChange={setBody}
+          placeholder="Write a comment... (type @ to mention)"
+          members={board?.members}
+          toolbar={false}
+          minHeight="40px"
         />
-        <Button type="submit" size="sm" disabled={submitting}>Comment</Button>
+        <div className="mt-1 flex justify-end">
+          <Button type="submit" size="sm" disabled={submitting}>Comment</Button>
+        </div>
       </form>
     </div>
   )
