@@ -68,9 +68,8 @@ export default function useKeyboardNavigation(enabled = true) {
               const targetColIndex = columnIndex - 1
               const newCol = COLUMNS[targetColIndex]
               const targetCards = getColumnCards(targetColIndex)
-              const targetPos = targetCards.length
+              const targetPos = Math.min(cardIndex, targetCards.length)
               moveCard(card.id, newCol, targetPos)?.then(() => {})?.catch(() => {})
-              // Follow the card: it lands at end of target column
               setCursor({ columnIndex: targetColIndex, cardIndex: targetPos })
             }
             return
@@ -82,7 +81,7 @@ export default function useKeyboardNavigation(enabled = true) {
               const targetColIndex = columnIndex + 1
               const newCol = COLUMNS[targetColIndex]
               const targetCards = getColumnCards(targetColIndex)
-              const targetPos = targetCards.length
+              const targetPos = Math.min(cardIndex, targetCards.length)
               moveCard(card.id, newCol, targetPos)?.then(() => {})?.catch(() => {})
               setCursor({ columnIndex: targetColIndex, cardIndex: targetPos })
             }
@@ -180,28 +179,28 @@ export default function useKeyboardNavigation(enabled = true) {
           break
         }
         case "m": {
-          // Move card right, cursor follows
+          // Move card right, cursor follows at same row
           e.preventDefault()
           const card = getFocusedCard()
           if (card && columnIndex < COLUMNS.length - 1) {
             const targetColIndex = columnIndex + 1
             const newCol = COLUMNS[targetColIndex]
             const targetCards = getColumnCards(targetColIndex)
-            const targetPos = targetCards.length
+            const targetPos = Math.min(cardIndex, targetCards.length)
             moveCard(card.id, newCol, targetPos)?.then(() => {})?.catch(() => {})
             setCursor({ columnIndex: targetColIndex, cardIndex: targetPos })
           }
           break
         }
         case "M": {
-          // Move card left, cursor follows
+          // Move card left, cursor follows at same row
           e.preventDefault()
           const card = getFocusedCard()
           if (card && columnIndex > 0) {
             const targetColIndex = columnIndex - 1
             const newCol = COLUMNS[targetColIndex]
             const targetCards = getColumnCards(targetColIndex)
-            const targetPos = targetCards.length
+            const targetPos = Math.min(cardIndex, targetCards.length)
             moveCard(card.id, newCol, targetPos)?.then(() => {})?.catch(() => {})
             setCursor({ columnIndex: targetColIndex, cardIndex: targetPos })
           }
