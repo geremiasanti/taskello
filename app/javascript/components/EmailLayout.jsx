@@ -6,7 +6,6 @@ import CardDetailPanel from "./CardDetailPanel"
 import CardForm from "./CardForm"
 
 const COLUMN_LABELS = { todo: "To Do", doing: "In Progress", done: "Done" }
-const COLUMN_COLORS = { todo: "#57ab5a", doing: "#d29922", done: "#539bf5" }
 
 export default function EmailLayout({ columns, columnCards, board }) {
   const selectedCard = useCardStore((s) => s.selectedCard)
@@ -18,8 +17,7 @@ export default function EmailLayout({ columns, columnCards, board }) {
       <div className="w-80 border-r border-[var(--color-border)] overflow-y-auto bg-[var(--color-bg-secondary)]">
         {columns.map((col) => (
           <div key={col} className="border-b border-[var(--color-border)]">
-            <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLUMN_COLORS[col] }} />
+            <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide">
               {COLUMN_LABELS[col]} ({columnCards(col).length})
             </div>
             {newCardColumn === col && (

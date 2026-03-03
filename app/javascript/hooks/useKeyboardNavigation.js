@@ -8,10 +8,6 @@ const MOTION_KEYS = new Set([
   "h", "l", "j", "k", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
 ])
 
-export function showInsult() {
-  return confirm("Sicuro? Solo i vigliacchi spostano indietro le card, fai cacare.")
-}
-
 export function fireConfetti() {
   const canvas = document.createElement("canvas")
   canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483647"
@@ -154,7 +150,6 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
           case "ArrowLeft": {
             e.preventDefault()
             if (columnIndex > 0) {
-              if (!showInsult()) return
               const targetColIndex = columnIndex - 1
               const newCol = COLUMNS[targetColIndex]
               const targetCards = getColumnCards(targetColIndex)
@@ -299,7 +294,6 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
           e.preventDefault()
           const card = getFocusedCard()
           if (card && columnIndex > 0) {
-            if (!showInsult()) break
             const targetColIndex = columnIndex - 1
             const newCol = COLUMNS[targetColIndex]
             const targetCards = getColumnCards(targetColIndex)

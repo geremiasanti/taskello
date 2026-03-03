@@ -17,13 +17,12 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import { useCardStore } from "../stores/cardStore"
 import { useUiStore } from "../stores/uiStore"
-import { fireConfetti, showInsult } from "../hooks/useKeyboardNavigation"
+import { fireConfetti } from "../hooks/useKeyboardNavigation"
 import CardPreview from "./CardPreview"
 import CardForm from "./CardForm"
 import Button from "./ui/Button"
 
 const COLUMN_LABELS = { todo: "To Do", doing: "In Progress", done: "Done" }
-const COLUMN_COLORS = { todo: "#57ab5a", doing: "#d29922", done: "#539bf5" }
 
 function SortableCard({ card }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -60,8 +59,7 @@ function DroppableColumn({ column, label, cards, board }) {
   return (
     <div ref={setNodeRef} className="flex-1 min-w-[280px] max-w-[400px] flex flex-col bg-[var(--color-column-bg)] rounded-lg border border-[var(--color-border-subtle)] overflow-hidden">
       <div className="flex items-center justify-between px-3 py-2.5 border-b border-[var(--color-border-subtle)] shrink-0">
-        <h3 className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLUMN_COLORS[column] }} />
+        <h3 className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
           {label} <span className="text-[var(--color-text-muted)] font-normal">{cards.length}</span>
         </h3>
         <Button variant="ghost" size="sm" onClick={() => setShowForm(!showForm)}>+</Button>
@@ -159,12 +157,6 @@ export default function DndBoard({ columns, columnCards, board }) {
     const COLS = ["todo", "doing", "done"]
     const originIdx = COLS.indexOf(dragOriginColumn)
     const targetIdx = COLS.indexOf(targetColumn)
-    if (dragOriginColumn && targetIdx < originIdx) {
-      if (!showInsult()) {
-        setDragOriginColumn(null)
-        return
-      }
-    }
     moveCard(cardId, targetColumn, targetPosition)
     if (dragOriginColumn && targetIdx > originIdx) fireConfetti()
     setDragOriginColumn(null)
