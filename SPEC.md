@@ -11,7 +11,9 @@ Taskello e' un task manager simile a trello. Permette di gestire delle board, og
 
 - Ogni board ha il suo creatore che puo' modificarla/eliminarla
 - Puo' aggiungere utenti alla board che potranno aggiungere/modificare/eliminare cards
-- Ogni board ha 3 colonne: Todo, In Progress, Done
+- Ogni board ha 3 colonne fisse: Todo, In Progress, Done (in futuro potrebbero diventare dinamiche/personalizzabili)
+- All'interno della board tutti gli utenti membri possono fare tutto sulle card (CRUD, spostamento, etc.)
+- Drag & drop delle card tra colonne e per riordinarle dentro la stessa colonna
 
 ## Cards
 
@@ -19,9 +21,11 @@ Taskello e' un task manager simile a trello. Permette di gestire delle board, og
     - un url e opzionalmente un testo per renderlo un link
     - un immagine
     - un file generico
+- Upload file/immagini gestiti con Active Storage, storage su disco locale.
 - le cards hanno partecipanti, di default solo il creatore, gli utenti possono aggiungere/rimuovere gli altri utenti.
 - Le cards hanno anche una sezione commenti, tipo chat, gli utenti della board possono scriverci e taggarsi a vicenda.
-- descrizione markdown, penso che rails abbia qualcosa per gestire questi input complessi.
+- Descrizione in markdown, editor rich-text lato React (es. TipTap o simile).
+- Ordinamento di default: la card modificata piu' di recente in alto. L'ordine si puo' cambiare manualmente con le keyboard motions o con drag & drop.
 - Nice to have: timeline con tutte le operazioni di modifica alla card
 - Per lo stato puoi fare un campo che matcha il nome della colonna in cui si trova
 - le card devono avere un anteprima solo con il titolo e si deve poter aprire il dettaglio
@@ -44,6 +48,10 @@ Taskello e' un task manager simile a trello. Permette di gestire delle board, og
 - Multi user. l'utente avra' username, email, password, profile pic. Username e email uniq.
 - Nice to have registrazione/login con github/gmail, ma la possiamo gestire in un secondo momento.
 
+## Real-time
+
+- Aggiornamenti live tramite ActionCable (WebSocket): nuove card, spostamenti, commenti, notifiche.
+
 ## Notifiche
 
 - Quando vieni taggato in un messaggio o messo come partecipante in un card -> notifica
@@ -61,7 +69,8 @@ Taskello e' un task manager simile a trello. Permette di gestire delle board, og
 ## Navigation
 
 - Voglio poter navigare sia con mouse che con tastiera
-- motions con frecce oppure hjkl e enter per aprire l'elemento su cui ti trovi
+- motions con tab o frecce oppure hjkl e enter per aprire l'elemento su cui ti trovi
+- di base appena premi una motion parti con un cursore virtuale (non so se ha un nome) sulla card in alto a sinistra, l'utente capisce dov'e' il cursore perche' aggiunge un bordo blue intorno all'elemento
 - tutte le azioni principali devono avere un tasto
     - Creare una card
     - eliminare card
