@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useCallback } from "react"
 import api from "../lib/api"
 import Button from "./ui/Button"
 import Avatar from "./ui/Avatar"
@@ -10,20 +10,32 @@ export default function CommentSection({ card, board, onRefresh }) {
   const [submitting, setSubmitting] = useState(false)
   const user = useAuthStore((s) => s.user)
   const editorRef = useRef(null)
+  const bodyRef = useRef("")
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const trimmed = body.replace(/<p><\/p>/g, "").trim()
-    if (!trimmed) return
+  const handleChange = useCallback((html) => {
+    setBody(html)
+    bodyRef.current = html
+  }, [])
+
+  const doSubmit = useCallback(async () => {
+    const html = bodyRef.current
+    const trimmed = html.replace(/<p><\/p>/g, "").trim()
+    if (!trimmed || submitting) return
     setSubmitting(true)
     try {
-      await api.post(`/cards/${card.id}/comments`, { comment: { body } })
+      await api.post(`/cards/${card.id}/comments`, { comment: { body: html } })
       setBody("")
+      bodyRef.current = ""
       editorRef.current?.clear()
       onRefresh()
     } finally {
       setSubmitting(false)
     }
+  }, [card.id, onRefresh, submitting])
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    doSubmit()
   }
 
   const handleDelete = async (commentId) => {
@@ -64,13 +76,15 @@ export default function CommentSection({ card, board, onRefresh }) {
         <RichTextEditor
           ref={editorRef}
           content=""
-          onChange={setBody}
-          placeholder="Write a comment... (type @ to mention)"
+          onChange={handleChange}
+          onCtrlEnter={doSubmit}
+          placeholder="Write a comment... (@ to mention, Ctrl+Enter to send)"
           members={board?.members}
           toolbar={false}
           minHeight="40px"
         />
-        <div className="mt-1 flex justify-end">
+        <div className="mt-1 flex items-center justify-between">
+          <span className="text-[10px] text-[var(--color-text-muted)]">Ctrl+Enter to send</span>
           <Button type="submit" size="sm" disabled={submitting}>Comment</Button>
         </div>
       </form>

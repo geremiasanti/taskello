@@ -1,8 +1,9 @@
-import React, { useEffect, useCallback, forwardRef, useImperativeHandle } from "react"
+import React, { useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from "react"
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Placeholder from "@tiptap/extension-placeholder"
 import Mention from "@tiptap/extension-mention"
+import { Extension } from "@tiptap/core"
 
 const ToolbarButton = ({ active, onClick, children, title }) => (
   <button
@@ -147,13 +148,32 @@ function renderPopup(el, component) {
 }
 
 const RichTextEditor = forwardRef(function RichTextEditor(
-  { content, onChange, placeholder, members, toolbar = true, className = "", minHeight = "80px" },
+  { content, onChange, onCtrlEnter, placeholder, members, toolbar = true, className = "", minHeight = "80px" },
   ref
 ) {
+  const onCtrlEnterRef = useRef(onCtrlEnter)
+  onCtrlEnterRef.current = onCtrlEnter
+
   const extensions = [
     StarterKit,
     Placeholder.configure({ placeholder: placeholder || "Write something..." }),
   ]
+
+  if (onCtrlEnter) {
+    extensions.push(
+      Extension.create({
+        name: "ctrlEnterSubmit",
+        addKeyboardShortcuts() {
+          return {
+            "Mod-Enter": () => {
+              onCtrlEnterRef.current?.()
+              return true
+            },
+          }
+        },
+      })
+    )
+  }
 
   if (members) {
     extensions.push(
