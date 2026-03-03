@@ -23,6 +23,14 @@ Taskello e' un task manager simile a trello. Permette di gestire delle board, og
 - Le cards hanno anche una sezione commenti, tipo chat, gli utenti della board possono scriverci e taggarsi a vicenda.
 - descrizione markdown, penso che rails abbia qualcosa per gestire questi input complessi.
 - Nice to have: timeline con tutte le operazioni di modifica alla card
+- Per lo stato puoi fare un campo che matcha il nome della colonna in cui si trova
+- le card devono avere un anteprima solo con il titolo e si deve poter aprire il dettaglio
+
+## Layouts
+
+- 2 layouts
+    1. kanban trello classico -> colonne, clicco su una card e si apre il dettaglio in una modale
+    2. la visualizzazione stile client email (non so quale sia il nome) -> a sinistra le 3 colonne diventano stack impilati verticalmente, se si clicca un dettaglio si apre nella meta' destra della pagina 
 
 ## Labels
 
@@ -74,6 +82,12 @@ Taskello e' un task manager simile a trello. Permette di gestire delle board, og
 
 - Documenta le feature che fai nel README
 - Fai commit in base a feature e fixes 
+
+## Responsive
+
+- diamo priorita' al desktop
+- l'app deve essere responsive, io la utilizzero' principalmente da desktop ma deve essere utilizzabile anche da mobile.
+- valuta te un primo approccio mobile e poi ti daro' dei feedback
 
 ## Claude
 
