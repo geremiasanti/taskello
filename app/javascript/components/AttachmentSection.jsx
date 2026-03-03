@@ -18,11 +18,18 @@ export default function AttachmentSection({ card, onRefresh }) {
     onRefresh()
   }
 
+  const normalizeUrl = (url) => {
+    const trimmed = url.trim()
+    if (/^https?:\/\//i.test(trimmed)) return trimmed
+    return `https://${trimmed}`
+  }
+
   const handleAddLink = async (e) => {
     e.preventDefault()
     if (!linkUrl.trim()) return
+    const url = normalizeUrl(linkUrl)
     await api.post(`/cards/${card.id}/attachments`, {
-      attachment: { attachment_type: "link", url: linkUrl, link_text: linkText || linkUrl },
+      attachment: { attachment_type: "link", url, link_text: linkText || linkUrl },
     })
     setLinkUrl("")
     setLinkText("")
@@ -45,7 +52,8 @@ export default function AttachmentSection({ card, onRefresh }) {
             bg-[var(--color-bg-secondary)] border border-[var(--color-border-subtle)]">
             <div>
               {att.attachment_type === "link" ? (
-                <a href={att.url} target="_blank" rel="noopener noreferrer"
+                <a href={/^https?:\/\//i.test(att.url) ? att.url : `https://${att.url}`}
+                  target="_blank" rel="noopener noreferrer"
                   className="text-[var(--color-primary)] hover:underline">
                   {att.link_text || att.url}
                 </a>
