@@ -10,7 +10,7 @@ export default function CardPreview({ card }) {
     <div
       onClick={() => selectCard(card)}
       className="p-3 rounded-md border border-[var(--color-border)] bg-[var(--color-card-bg)]
-        cursor-pointer hover:border-[var(--color-primary)] transition-colors
+        cursor-pointer hover:shadow-md transition-shadow
         shadow-sm"
       data-card-id={card.id}
     >
