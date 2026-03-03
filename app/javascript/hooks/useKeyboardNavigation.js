@@ -9,35 +9,46 @@ const MOTION_KEYS = new Set([
 ])
 
 export function showInsult() {
-  alert("Sicuro? Solo i vigliacchi spostano indietro le card, fai cacare.")
+  return confirm("Sicuro? Solo i vigliacchi spostano indietro le card, fai cacare.")
 }
 
 export function fireConfetti() {
   const canvas = document.createElement("canvas")
-  canvas.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999"
+  canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483647"
   document.body.appendChild(canvas)
   const ctx = canvas.getContext("2d")
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
-  const particles = Array.from({ length: 80 }, () => ({
-    x: Math.random() * canvas.width,
-    y: -10 - Math.random() * 40,
-    vx: (Math.random() - 0.5) * 6,
-    vy: Math.random() * 3 + 2,
-    size: Math.random() * 6 + 3,
-    color: ["#e5534b", "#539bf5", "#57ab5a", "#d29922", "#b083f0", "#f0883e", "#f778ba"][Math.floor(Math.random() * 7)],
-    rot: Math.random() * 360,
-    rv: (Math.random() - 0.5) * 10,
-  }))
+  const cx = canvas.width / 2
+  const cy = canvas.height / 2
+  const colors = ["#e5534b", "#539bf5", "#57ab5a", "#d29922", "#b083f0", "#f0883e", "#f778ba", "#ff6b6b", "#ffd93d", "#6bcb77"]
+  const particles = Array.from({ length: 120 }, () => {
+    const angle = Math.random() * Math.PI * 2
+    const speed = Math.random() * 8 + 4
+    return {
+      x: cx,
+      y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 3,
+      size: Math.random() * 8 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rot: Math.random() * 360,
+      rv: (Math.random() - 0.5) * 15,
+      opacity: 1,
+    }
+  })
   let frame = 0
   const animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     particles.forEach((p) => {
       p.x += p.vx
       p.y += p.vy
-      p.vy += 0.08
+      p.vy += 0.12
+      p.vx *= 0.99
       p.rot += p.rv
+      p.opacity = Math.max(0, 1 - frame / 100)
       ctx.save()
+      ctx.globalAlpha = p.opacity
       ctx.translate(p.x, p.y)
       ctx.rotate((p.rot * Math.PI) / 180)
       ctx.fillStyle = p.color
@@ -45,10 +56,10 @@ export function fireConfetti() {
       ctx.restore()
     })
     frame++
-    if (frame < 120) requestAnimationFrame(animate)
+    if (frame < 100) requestAnimationFrame(animate)
     else canvas.remove()
   }
-  animate()
+  requestAnimationFrame(animate)
 }
 
 export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } = {}) {
@@ -143,7 +154,7 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
           case "ArrowLeft": {
             e.preventDefault()
             if (columnIndex > 0) {
-              showInsult()
+              if (!showInsult()) return
               const targetColIndex = columnIndex - 1
               const newCol = COLUMNS[targetColIndex]
               const targetCards = getColumnCards(targetColIndex)
@@ -288,7 +299,7 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
           e.preventDefault()
           const card = getFocusedCard()
           if (card && columnIndex > 0) {
-            showInsult()
+            if (!showInsult()) break
             const targetColIndex = columnIndex - 1
             const newCol = COLUMNS[targetColIndex]
             const targetCards = getColumnCards(targetColIndex)

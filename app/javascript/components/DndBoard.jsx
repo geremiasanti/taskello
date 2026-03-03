@@ -159,11 +159,14 @@ export default function DndBoard({ columns, columnCards, board }) {
     const COLS = ["todo", "doing", "done"]
     const originIdx = COLS.indexOf(dragOriginColumn)
     const targetIdx = COLS.indexOf(targetColumn)
-    moveCard(cardId, targetColumn, targetPosition)
-    if (dragOriginColumn && targetColumn !== dragOriginColumn) {
-      if (targetIdx > originIdx) fireConfetti()
-      else if (targetIdx < originIdx) setTimeout(() => showInsult(), 100)
+    if (dragOriginColumn && targetIdx < originIdx) {
+      if (!showInsult()) {
+        setDragOriginColumn(null)
+        return
+      }
     }
+    moveCard(cardId, targetColumn, targetPosition)
+    if (dragOriginColumn && targetIdx > originIdx) fireConfetti()
     setDragOriginColumn(null)
   }
 
