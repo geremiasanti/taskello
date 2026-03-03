@@ -80,6 +80,7 @@ Taskello e' un task manager simile a trello. Permette di gestire delle board, og
     - etc...
 - legenda action principali in fondo alla pagina (nascondibile)
 - quando hovero su un azione vorrei che mi venisse suggerito il tasto, sempre in fondo alla pagina andando temporamenamente a sostituire la legenda
+- se sono su una card e premo ctrl piu' motion, anziche' spostare il focus dalla card corrente a un'altra, sposto la card stessa
 
 ## Development
 
