@@ -15,7 +15,7 @@ export default function NotificationBell() {
 
   return (
     <div className="relative">
-      <button onClick={() => setOpen(!open)} className="relative text-sm px-2 py-1 rounded hover:bg-white/10 cursor-pointer">
+      <button onClick={() => setOpen(!open)} className="relative text-base px-2 py-1 rounded hover:bg-white/10 cursor-pointer leading-none">
         {"\u{1F514}"}
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-[var(--color-primary)] text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">

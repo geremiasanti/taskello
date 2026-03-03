@@ -16,7 +16,7 @@ export default function ThemeSwitcher() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="text-sm px-2 py-1 rounded hover:bg-white/10 cursor-pointer"
+        className="text-base px-2 py-1 rounded hover:bg-white/10 cursor-pointer leading-none"
         title="Switch theme"
       >
         {theme === "light" ? "\u2600" : theme === "dark" ? "\u263E" : "\u25A3"}
