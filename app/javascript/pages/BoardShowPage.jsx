@@ -29,7 +29,6 @@ export default function BoardShowPage() {
   const selectedCard = useCardStore((s) => s.selectedCard)
   const clearSelectedCard = useCardStore((s) => s.clearSelectedCard)
   const layout = useUiStore((s) => s.layout)
-  const toggleLayout = useUiStore((s) => s.toggleLayout)
   const user = useAuthStore((s) => s.user)
   const [showEdit, setShowEdit] = useState(false)
   const [showMembers, setShowMembers] = useState(false)
@@ -47,7 +46,7 @@ export default function BoardShowPage() {
   }, [board?.cards])
 
   if (!board) {
-    return <div className="p-6 text-[var(--color-text-secondary)]">Loading board...</div>
+    return <div className="p-8 text-[var(--color-text-secondary)]">Loading board...</div>
   }
 
   const isCreator = board.creator_id === user?.id
@@ -63,22 +62,24 @@ export default function BoardShowPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-3rem)]">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
-        <div className="flex items-center gap-3">
-          <h1 className="text-base font-semibold text-[var(--color-text)]">{board.name}</h1>
-          <Button variant="ghost" size="sm" onClick={() => setShowMembers(true)}>
-            Members ({board.members?.length || 0})
-          </Button>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={toggleLayout}>
-            {layout === "kanban" ? "Email layout" : "Kanban layout"}
-          </Button>
+      <div className="px-5 py-3 border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div>
+              <h1 className="text-lg font-bold text-[var(--color-text)] leading-tight">{board.name}</h1>
+              {board.description && (
+                <p className="text-xs text-[var(--color-text-muted)] mt-0.5 max-w-lg truncate">{board.description}</p>
+              )}
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setShowMembers(true)}>
+              Members ({board.members?.length || 0})
+            </Button>
+          </div>
           {isCreator && (
-            <>
+            <div className="flex items-center gap-1">
               <Button variant="ghost" size="sm" onClick={() => setShowEdit(true)}>Edit</Button>
-              <Button variant="ghost" size="sm" onClick={handleDelete}>Delete</Button>
-            </>
+              <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
+            </div>
           )}
         </div>
       </div>

@@ -52,22 +52,22 @@ function DroppableColumn({ column, label, cards, board }) {
   })
 
   return (
-    <div ref={setNodeRef} className="flex-shrink-0 w-80 flex flex-col bg-[var(--color-column-bg)] rounded-lg">
-      <div className="flex items-center justify-between px-3 py-2">
-        <h3 className="text-sm font-semibold text-[var(--color-text)]">
-          {label} <span className="text-[var(--color-text-muted)] font-normal ml-1">{cards.length}</span>
+    <div ref={setNodeRef} className="flex-1 min-w-[280px] max-w-[400px] flex flex-col bg-[var(--color-column-bg)] rounded-lg border border-[var(--color-border-subtle)] overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-[var(--color-border-subtle)] shrink-0">
+        <h3 className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+          {label} <span className="text-[var(--color-text-muted)] font-normal">{cards.length}</span>
         </h3>
         <Button variant="ghost" size="sm" onClick={() => setShowForm(!showForm)}>+</Button>
       </div>
 
       {showForm && (
-        <div className="px-2 pb-2">
+        <div className="px-3 py-2 border-b border-[var(--color-border-subtle)]">
           <CardForm boardId={board.id} column={column} onSuccess={() => setShowForm(false)} onCancel={() => setShowForm(false)} />
         </div>
       )}
 
       <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
-        <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-2 min-h-[50px]"
+        <div className="flex-1 overflow-y-auto px-3 pt-3 pb-3 space-y-2 min-h-[80px]"
           data-column={column}>
           {cards.map((card) => (
             <SortableCard key={card.id} card={card} />
@@ -157,7 +157,7 @@ export default function DndBoard({ columns, columnCards, board }) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex-1 flex gap-4 p-4 overflow-x-auto">
+      <div className="flex-1 flex justify-center gap-5 p-5 overflow-x-auto kanban-columns">
         {columns.map((col) => (
           <DroppableColumn
             key={col}

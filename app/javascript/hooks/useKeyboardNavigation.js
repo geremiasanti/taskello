@@ -48,10 +48,12 @@ export default function useKeyboardNavigation(enabled = true) {
           case "ArrowLeft": {
             e.preventDefault()
             if (columnIndex > 0) {
-              const newCol = COLUMNS[columnIndex - 1]
-              const targetCards = getColumnCards(columnIndex - 1)
-              moveCard(card.id, newCol, targetCards.length)
-              setCursor({ columnIndex: columnIndex - 1, cardIndex: Math.min(cardIndex, targetCards.length) })
+              const targetColIndex = columnIndex - 1
+              const newCol = COLUMNS[targetColIndex]
+              const targetCards = getColumnCards(targetColIndex)
+              const newCardIndex = Math.min(cardIndex, targetCards.length)
+              setCursor({ columnIndex: targetColIndex, cardIndex: newCardIndex })
+              moveCard(card.id, newCol, targetCards.length).catch(() => {})
             }
             return
           }
@@ -59,10 +61,12 @@ export default function useKeyboardNavigation(enabled = true) {
           case "ArrowRight": {
             e.preventDefault()
             if (columnIndex < COLUMNS.length - 1) {
-              const newCol = COLUMNS[columnIndex + 1]
-              const targetCards = getColumnCards(columnIndex + 1)
-              moveCard(card.id, newCol, targetCards.length)
-              setCursor({ columnIndex: columnIndex + 1, cardIndex: Math.min(cardIndex, targetCards.length) })
+              const targetColIndex = columnIndex + 1
+              const newCol = COLUMNS[targetColIndex]
+              const targetCards = getColumnCards(targetColIndex)
+              const newCardIndex = Math.min(cardIndex, targetCards.length)
+              setCursor({ columnIndex: targetColIndex, cardIndex: newCardIndex })
+              moveCard(card.id, newCol, targetCards.length).catch(() => {})
             }
             return
           }
@@ -70,8 +74,8 @@ export default function useKeyboardNavigation(enabled = true) {
           case "ArrowUp": {
             e.preventDefault()
             if (cardIndex > 0) {
-              moveCard(card.id, COLUMNS[columnIndex], cardIndex - 1)
               setCursor({ columnIndex, cardIndex: cardIndex - 1 })
+              moveCard(card.id, COLUMNS[columnIndex], cardIndex - 1).catch(() => {})
             }
             return
           }
@@ -79,8 +83,8 @@ export default function useKeyboardNavigation(enabled = true) {
           case "ArrowDown": {
             e.preventDefault()
             if (cardIndex < colCards.length - 1) {
-              moveCard(card.id, COLUMNS[columnIndex], cardIndex + 1)
               setCursor({ columnIndex, cardIndex: cardIndex + 1 })
+              moveCard(card.id, COLUMNS[columnIndex], cardIndex + 1).catch(() => {})
             }
             return
           }
@@ -161,7 +165,7 @@ export default function useKeyboardNavigation(enabled = true) {
           if (card && columnIndex < COLUMNS.length - 1) {
             const newCol = COLUMNS[columnIndex + 1]
             const targetCards = getColumnCards(columnIndex + 1)
-            moveCard(card.id, newCol, targetCards.length)
+            moveCard(card.id, newCol, targetCards.length).catch(() => {})
           }
           break
         }
@@ -171,7 +175,7 @@ export default function useKeyboardNavigation(enabled = true) {
           if (card && columnIndex > 0) {
             const newCol = COLUMNS[columnIndex - 1]
             const targetCards = getColumnCards(columnIndex - 1)
-            moveCard(card.id, newCol, targetCards.length)
+            moveCard(card.id, newCol, targetCards.length).catch(() => {})
           }
           break
         }
