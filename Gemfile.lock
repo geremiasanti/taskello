@@ -156,9 +156,7 @@ GEM
     mini_magick (5.3.1)
       logger
     mini_mime (1.1.5)
-    minitest (6.0.2)
-      drb (~> 2.0)
-      prism (~> 1.5)
+    minitest (5.27.0)
     msgpack (1.8.0)
     mutex_m (0.3.0)
     net-imap (0.6.3)
@@ -318,6 +316,7 @@ DEPENDENCIES
   image_processing (~> 1.2)
   jbuilder
   jsbundling-rails
+  minitest (~> 5.20)
   pg (~> 1.1)
   puma (>= 5.0)
   rails (~> 7.1.2)
@@ -329,7 +328,7 @@ DEPENDENCIES
   web-console
 
 RUBY VERSION
-   ruby 3.4.2p28
+  ruby 3.3.0
 
 BUNDLED WITH
-   2.5.21
+  4.0.7
