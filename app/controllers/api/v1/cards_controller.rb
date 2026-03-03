@@ -16,6 +16,7 @@ module Api
         @card = board.cards.build(card_params.merge(creator: current_user, position: position))
 
         if @card.save
+          BoardChannel.broadcast_card_update(@card.board, @card, "created")
           render :show, status: :created
         else
           render json: { errors: @card.errors.full_messages }, status: :unprocessable_entity
@@ -24,6 +25,7 @@ module Api
 
       def update
         if @card.update(card_update_params)
+          BoardChannel.broadcast_card_update(@card.board, @card, "updated")
           render :show
         else
           render json: { errors: @card.errors.full_messages }, status: :unprocessable_entity
@@ -31,7 +33,10 @@ module Api
       end
 
       def destroy
+        board = @card.board
+        card_id = @card.id
         @card.destroy
+        BoardChannel.broadcast_board_update(board, "card_deleted", { card_id: card_id })
         head :no_content
       end
 
@@ -39,6 +44,7 @@ module Api
         result = CardMover.call(@card, params.dig(:card, :column), params.dig(:card, :position).to_i)
         if result
           @card.reload
+          BoardChannel.broadcast_card_update(@card.board, @card, "moved")
           render :show
         else
           render json: { error: "Move failed" }, status: :unprocessable_entity

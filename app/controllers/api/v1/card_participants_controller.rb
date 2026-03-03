@@ -8,12 +8,13 @@ module Api
         @card.card_participants.create!(user: user)
 
         if user != current_user
-          Notification.create!(
+          notification = Notification.create!(
             user: user,
             actor: current_user,
             notifiable: @card,
             notification_type: "participant_added"
           )
+          NotificationChannel.broadcast_notification(user, notification)
         end
 
         render json: { id: user.id, username: user.username }, status: :created

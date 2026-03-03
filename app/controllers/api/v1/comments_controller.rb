@@ -48,12 +48,13 @@ module Api
         usernames = comment.body.scan(/@(\w+)/).flatten.uniq
         users = User.where(username: usernames).where.not(id: current_user.id)
         users.each do |user|
-          Notification.create!(
+          notification = Notification.create!(
             user: user,
             actor: current_user,
             notifiable: comment,
             notification_type: "mention"
           )
+          NotificationChannel.broadcast_notification(user, notification)
         end
       end
     end
