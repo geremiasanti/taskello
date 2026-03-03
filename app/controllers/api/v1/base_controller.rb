@@ -1,7 +1,7 @@
 module Api
   module V1
     class BaseController < ActionController::Base
-      protect_from_forgery with: :null_session
+      skip_forgery_protection
 
       before_action :authenticate_user!
 
