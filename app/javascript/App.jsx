@@ -8,10 +8,13 @@ import SignupPage from "./pages/SignupPage"
 import BoardsIndexPage from "./pages/BoardsIndexPage"
 import BoardShowPage from "./pages/BoardShowPage"
 import Navbar from "./components/Navbar"
+import useNotificationChannel from "./hooks/useNotificationChannel"
 
 function AuthGuard() {
   const user = useAuthStore((s) => s.user)
   const loading = useAuthStore((s) => s.loading)
+
+  useNotificationChannel(user?.id)
 
   if (loading) {
     return (

@@ -11,6 +11,9 @@ import BoardForm from "../components/BoardForm"
 import Button from "../components/ui/Button"
 import Modal from "../components/ui/Modal"
 import { useAuthStore } from "../stores/authStore"
+import useBoardChannel from "../hooks/useBoardChannel"
+import useKeyboardNavigation from "../hooks/useKeyboardNavigation"
+import KeyboardLegend from "../components/KeyboardLegend"
 
 const COLUMNS = ["todo", "doing", "done"]
 
@@ -30,6 +33,9 @@ export default function BoardShowPage() {
   const user = useAuthStore((s) => s.user)
   const [showEdit, setShowEdit] = useState(false)
   const [showMembers, setShowMembers] = useState(false)
+
+  useBoardChannel(board?.id)
+  useKeyboardNavigation(layout === "kanban" && !selectedCard && !showEdit && !showMembers)
 
   useEffect(() => {
     fetchBoard(id)
@@ -94,6 +100,8 @@ export default function BoardShowPage() {
       <Modal isOpen={showMembers} onClose={() => setShowMembers(false)} title="Members">
         <MembersList board={board} isCreator={isCreator} />
       </Modal>
+
+      <KeyboardLegend />
     </div>
   )
 }
