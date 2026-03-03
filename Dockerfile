@@ -22,7 +22,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential curl git libpq-dev libvips node-gyp pkg-config python-is-python3 dos2unix
 
 # Install JavaScript dependencies
-ARG NODE_VERSION=18.20.4
+ARG NODE_VERSION=20.18.0
 ARG YARN_VERSION=1.22.19
 ENV PATH=/usr/local/node/bin:$PATH
 RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
@@ -64,13 +64,17 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libvips postgresql-client && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+# Copy Node.js from build stage (needed for jsbundling-rails test:prepare)
+COPY --from=build /usr/local/node /usr/local/node
+ENV PATH=/usr/local/node/bin:$PATH
+
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
+    chown -R rails:rails db log storage tmp app/assets/builds
 USER rails:rails
 
 # Entrypoint prepares the database.
