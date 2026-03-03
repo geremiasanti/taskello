@@ -15,7 +15,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/claude_code_assignment_production
+      DATABASE_URL: postgres://postgres:postgres@db:5432/taskello_production
       RAILS_ENV: production
       RAILS_MASTER_KEY: 9b710d11a9434f7742583fa42cd1cf1f
       RAILS_SERVE_STATIC_FILES: "true"

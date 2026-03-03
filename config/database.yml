@@ -7,14 +7,14 @@ default: &default
 
 development:
   <<: *default
-  database: claude_code_assignment_development
+  database: taskello_development
 
 test:
   <<: *default
-  database: claude_code_assignment_test
+  database: taskello_test
 
 production:
   <<: *default
-  database: claude_code_assignment_production
-  username: claude_code_assignment
-  password: <%= ENV["CLAUDE_CODE_ASSIGNMENT_DATABASE_PASSWORD"] %>
+  database: taskello_production
+  username: taskello
+  password: <%= ENV["TASKELLO_DATABASE_PASSWORD"] %>
