@@ -4,9 +4,16 @@ import { useCardStore } from "../stores/cardStore"
 
 const COLUMNS = ["todo", "doing", "done"]
 
+const MOTION_KEYS = new Set([
+  "h", "l", "j", "k", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab",
+])
+
 export default function useKeyboardNavigation(enabled = true) {
   const cursor = useUiStore((s) => s.cursor)
   const setCursor = useUiStore((s) => s.setCursor)
+  const cursorActive = useUiStore((s) => s.cursorActive)
+  const activateCursor = useUiStore((s) => s.activateCursor)
+  const deactivateCursor = useUiStore((s) => s.deactivateCursor)
   const toggleKeyboardLegend = useUiStore((s) => s.toggleKeyboardLegend)
   const layout = useUiStore((s) => s.layout)
   const cards = useCardStore((s) => s.cards)
@@ -15,6 +22,11 @@ export default function useKeyboardNavigation(enabled = true) {
   const selectedCard = useCardStore((s) => s.selectedCard)
   const moveCard = useCardStore((s) => s.moveCard)
   const deleteCard = useCardStore((s) => s.deleteCard)
+
+  // Deactivate cursor when entering the page
+  useEffect(() => {
+    deactivateCursor()
+  }, [])
 
   const getColumnCards = useCallback(
     (colIndex) => {
@@ -25,25 +37,10 @@ export default function useKeyboardNavigation(enabled = true) {
   )
 
   const getFocusedCard = useCallback(() => {
+    if (!cursorActive) return null
     const colCards = getColumnCards(cursor.columnIndex)
     return colCards[cursor.cardIndex] || null
-  }, [cursor, getColumnCards])
-
-  // Helper: find a card's cursor coordinates after a move
-  const findCardCursor = useCallback(
-    (cardId, fallbackCol, fallbackIndex) => {
-      for (let ci = 0; ci < COLUMNS.length; ci++) {
-        const col = COLUMNS[ci]
-        const sorted = cards
-          .filter((c) => c.column === col)
-          .sort((a, b) => a.position - b.position)
-        const idx = sorted.findIndex((c) => c.id === cardId)
-        if (idx !== -1) return { columnIndex: ci, cardIndex: idx }
-      }
-      return { columnIndex: fallbackCol, cardIndex: fallbackIndex }
-    },
-    [cards]
-  )
+  }, [cursor, cursorActive, getColumnCards])
 
   useEffect(() => {
     if (!enabled) return
@@ -51,6 +48,23 @@ export default function useKeyboardNavigation(enabled = true) {
     const handleKeydown = (e) => {
       const tag = e.target.tagName.toLowerCase()
       if (tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable) return
+
+      // First motion key: activate cursor on first card, don't move yet
+      if (!cursorActive && (MOTION_KEYS.has(e.key) || (e.ctrlKey || e.metaKey) && MOTION_KEYS.has(e.key))) {
+        e.preventDefault()
+        setCursor({ columnIndex: 0, cardIndex: 0 })
+        return
+      }
+
+      // ? works even without active cursor
+      if (e.key === "?") {
+        e.preventDefault()
+        toggleKeyboardLegend()
+        return
+      }
+
+      // Everything below requires active cursor
+      if (!cursorActive) return
 
       const { columnIndex, cardIndex } = cursor
       const colCards = getColumnCards(columnIndex)
@@ -168,6 +182,7 @@ export default function useKeyboardNavigation(enabled = true) {
         }
         case "Escape":
           e.preventDefault()
+          if (cursorActive) deactivateCursor()
           clearSelectedCard()
           break
         case "d": {
@@ -179,7 +194,6 @@ export default function useKeyboardNavigation(enabled = true) {
           break
         }
         case "m": {
-          // Move card right, cursor follows at same row
           e.preventDefault()
           const card = getFocusedCard()
           if (card && columnIndex < COLUMNS.length - 1) {
@@ -193,7 +207,6 @@ export default function useKeyboardNavigation(enabled = true) {
           break
         }
         case "M": {
-          // Move card left, cursor follows at same row
           e.preventDefault()
           const card = getFocusedCard()
           if (card && columnIndex > 0) {
@@ -206,22 +219,19 @@ export default function useKeyboardNavigation(enabled = true) {
           }
           break
         }
-        case "?":
-          e.preventDefault()
-          toggleKeyboardLegend()
-          break
       }
     }
 
     document.addEventListener("keydown", handleKeydown)
     return () => document.removeEventListener("keydown", handleKeydown)
-  }, [enabled, cursor, cards, getColumnCards, getFocusedCard])
+  }, [enabled, cursor, cursorActive, cards, getColumnCards, getFocusedCard])
 
-  // Highlight focused card with DOM effect
+  // Highlight focused card with DOM effect — only when cursor is active
   useEffect(() => {
     document.querySelectorAll("[data-card-id]").forEach((el) => {
       el.style.outline = ""
     })
+    if (!cursorActive) return
     const card = getFocusedCard()
     if (card) {
       const el = document.querySelector(`[data-card-id="${card.id}"]`)
@@ -230,16 +240,16 @@ export default function useKeyboardNavigation(enabled = true) {
         el.scrollIntoView?.({ block: "nearest" })
       }
     }
-  }, [cursor, cards, getFocusedCard])
+  }, [cursor, cursorActive, cards, getFocusedCard])
 
   // In email layout, auto-select card under cursor for detail panel
   useEffect(() => {
-    if (!enabled || layout !== "email") return
+    if (!enabled || layout !== "email" || !cursorActive) return
     const card = getFocusedCard()
     if (card && card.id !== selectedCard?.id) {
       selectCard(card)
     }
-  }, [cursor, layout, enabled, getFocusedCard])
+  }, [cursor, cursorActive, layout, enabled, getFocusedCard])
 
-  return { cursor, getFocusedCard }
+  return { cursor, cursorActive, getFocusedCard }
 }

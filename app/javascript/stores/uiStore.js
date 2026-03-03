@@ -11,6 +11,7 @@ export const useUiStore = create((set, get) => ({
   toasts: [],
   keyboardLegendVisible: false,
   cursor: { columnIndex: 0, cardIndex: 0 },
+  cursorActive: false,
 
   setTheme: (theme) => {
     localStorage.setItem("taskello-theme", theme)
@@ -32,5 +33,7 @@ export const useUiStore = create((set, get) => ({
 
   toggleKeyboardLegend: () => set((s) => ({ keyboardLegendVisible: !s.keyboardLegendVisible })),
 
-  setCursor: (cursor) => set({ cursor }),
+  setCursor: (cursor) => set({ cursor, cursorActive: true }),
+  activateCursor: () => set({ cursorActive: true }),
+  deactivateCursor: () => set({ cursorActive: false }),
 }))
