@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { useBoardStore } from "../stores/boardStore"
 import { useCardStore } from "../stores/cardStore"
 import { useUiStore } from "../stores/uiStore"
-import KanbanBoard from "../components/KanbanBoard"
+import DndBoard from "../components/DndBoard"
 import EmailLayout from "../components/EmailLayout"
 import CardDetailModal from "../components/CardDetailModal"
 import MembersList from "../components/MembersList"
@@ -78,7 +78,7 @@ export default function BoardShowPage() {
       </div>
 
       {layout === "kanban" ? (
-        <KanbanBoard columns={COLUMNS} columnCards={columnCards} board={board} />
+        <DndBoard columns={COLUMNS} columnCards={columnCards} board={board} />
       ) : (
         <EmailLayout columns={COLUMNS} columnCards={columnCards} board={board} />
       )}
