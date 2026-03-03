@@ -48,6 +48,46 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "doing", card.reload.column
   end
 
+  test "move card within column reorders positions" do
+    c1 = create(:card, board: @board, creator: @user, column: "todo", position: 0)
+    c2 = create(:card, board: @board, creator: @user, column: "todo", position: 1)
+    c3 = create(:card, board: @board, creator: @user, column: "todo", position: 2)
+
+    patch move_api_v1_card_path(c1), params: { card: { column: "todo", position: 2 } }, as: :json
+    assert_response :ok
+
+    assert_equal 2, c1.reload.position
+    assert_equal 0, c2.reload.position
+    assert_equal 1, c3.reload.position
+  end
+
+  test "move card cross-column maintains positions" do
+    c1 = create(:card, board: @board, creator: @user, column: "todo", position: 0)
+    c2 = create(:card, board: @board, creator: @user, column: "todo", position: 1)
+    c3 = create(:card, board: @board, creator: @user, column: "doing", position: 0)
+
+    patch move_api_v1_card_path(c1), params: { card: { column: "doing", position: 1 } }, as: :json
+    assert_response :ok
+
+    assert_equal "doing", c1.reload.column
+    assert_equal 1, c1.reload.position
+    assert_equal 0, c2.reload.position # gap closed in todo
+    assert_equal 0, c3.reload.position # unchanged
+  end
+
+  test "move card to end of column" do
+    c1 = create(:card, board: @board, creator: @user, column: "todo", position: 0)
+    c2 = create(:card, board: @board, creator: @user, column: "doing", position: 0)
+    c3 = create(:card, board: @board, creator: @user, column: "doing", position: 1)
+
+    patch move_api_v1_card_path(c1), params: { card: { column: "doing", position: 2 } }, as: :json
+    assert_response :ok
+
+    json = JSON.parse(response.body)
+    assert_equal "doing", json["column"]
+    assert_equal 2, json["position"]
+  end
+
   test "non-member cannot access cards" do
     other = create(:user)
     post api_v1_login_path, params: { session: { email: other.email, password: "password" } }, as: :json
