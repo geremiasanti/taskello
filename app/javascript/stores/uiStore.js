@@ -12,6 +12,7 @@ export const useUiStore = create((set, get) => ({
   keyboardLegendVisible: false,
   cursor: { columnIndex: 0, cardIndex: 0 },
   cursorActive: false,
+  newCardColumn: null,
 
   setTheme: (theme) => {
     localStorage.setItem("taskello-theme", theme)
@@ -36,4 +37,6 @@ export const useUiStore = create((set, get) => ({
   setCursor: (cursor) => set({ cursor, cursorActive: true }),
   activateCursor: () => set({ cursorActive: true }),
   deactivateCursor: () => set({ cursorActive: false }),
+  setNewCardColumn: (col) => set({ newCardColumn: col }),
+  clearNewCardColumn: () => set({ newCardColumn: null }),
 }))

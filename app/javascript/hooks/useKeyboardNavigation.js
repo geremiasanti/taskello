@@ -5,16 +5,77 @@ import { useCardStore } from "../stores/cardStore"
 const COLUMNS = ["todo", "doing", "done"]
 
 const MOTION_KEYS = new Set([
-  "h", "l", "j", "k", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab",
+  "h", "l", "j", "k", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
 ])
 
-export default function useKeyboardNavigation(enabled = true) {
+const INSULTS = [
+  "Ma cosa fai?! Si va AVANTI nella vita, non indietro!",
+  "Complimenti, hai appena inventato il regresso agile.",
+  "Ah sì, riportiamola indietro. Come i tuoi commit del venerdì sera.",
+  "Stai muovendo una card all'indietro. Il tuo Scrum Master sta piangendo.",
+  "404: Dignità professionale non trovata.",
+  "Questo è l'equivalente informatico di rimettere il dentifricio nel tubetto.",
+  "Hai appena fatto mass undo della produttività. Bravo.",
+  "La card sta tornando indietro più veloce della tua carriera.",
+  "Nemmeno Thanos avrebbe osato tanto.",
+  "Il tuo PM ha sentito un disturbo nella Forza. Eri tu.",
+  "Congratulazioni, hai sbloccato il badge 'Sabotatore Sprint'.",
+  "La card ti ha chiesto di non farlo. Non l'hai ascoltata.",
+]
+
+export function showInsult() {
+  const msg = INSULTS[Math.floor(Math.random() * INSULTS.length)]
+  alert(msg)
+}
+
+export function fireConfetti() {
+  const canvas = document.createElement("canvas")
+  canvas.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999"
+  document.body.appendChild(canvas)
+  const ctx = canvas.getContext("2d")
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+  const particles = Array.from({ length: 80 }, () => ({
+    x: Math.random() * canvas.width,
+    y: -10 - Math.random() * 40,
+    vx: (Math.random() - 0.5) * 6,
+    vy: Math.random() * 3 + 2,
+    size: Math.random() * 6 + 3,
+    color: ["#e5534b", "#539bf5", "#57ab5a", "#d29922", "#b083f0", "#f0883e", "#f778ba"][Math.floor(Math.random() * 7)],
+    rot: Math.random() * 360,
+    rv: (Math.random() - 0.5) * 10,
+  }))
+  let frame = 0
+  const animate = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    particles.forEach((p) => {
+      p.x += p.vx
+      p.y += p.vy
+      p.vy += 0.08
+      p.rot += p.rv
+      ctx.save()
+      ctx.translate(p.x, p.y)
+      ctx.rotate((p.rot * Math.PI) / 180)
+      ctx.fillStyle = p.color
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6)
+      ctx.restore()
+    })
+    frame++
+    if (frame < 120) requestAnimationFrame(animate)
+    else canvas.remove()
+  }
+  animate()
+}
+
+export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } = {}) {
   const cursor = useUiStore((s) => s.cursor)
   const setCursor = useUiStore((s) => s.setCursor)
   const cursorActive = useUiStore((s) => s.cursorActive)
   const activateCursor = useUiStore((s) => s.activateCursor)
   const deactivateCursor = useUiStore((s) => s.deactivateCursor)
   const toggleKeyboardLegend = useUiStore((s) => s.toggleKeyboardLegend)
+  const toggleLayout = useUiStore((s) => s.toggleLayout)
+  const setNewCardColumn = useUiStore((s) => s.setNewCardColumn)
   const layout = useUiStore((s) => s.layout)
   const cards = useCardStore((s) => s.cards)
   const selectCard = useCardStore((s) => s.selectCard)
@@ -56,10 +117,29 @@ export default function useKeyboardNavigation(enabled = true) {
         return
       }
 
-      // ? works even without active cursor
+      // These work even without active cursor
       if (e.key === "?") {
         e.preventDefault()
         toggleKeyboardLegend()
+        return
+      }
+      if (e.key === "Tab" && !cursorActive) {
+        e.preventDefault()
+        toggleLayout()
+        return
+      }
+      if (e.key === "n" && !cursorActive) {
+        e.preventDefault()
+        setNewCardColumn("todo")
+        return
+      }
+      if (e.key === "Escape" && !cursorActive) {
+        e.preventDefault()
+        if (selectedCard) {
+          clearSelectedCard()
+        } else if (onEscapeEmpty) {
+          onEscapeEmpty()
+        }
         return
       }
 
@@ -79,6 +159,7 @@ export default function useKeyboardNavigation(enabled = true) {
           case "ArrowLeft": {
             e.preventDefault()
             if (columnIndex > 0) {
+              showInsult()
               const targetColIndex = columnIndex - 1
               const newCol = COLUMNS[targetColIndex]
               const targetCards = getColumnCards(targetColIndex)
@@ -98,6 +179,7 @@ export default function useKeyboardNavigation(enabled = true) {
               const targetPos = Math.min(cardIndex, targetCards.length)
               moveCard(card.id, newCol, targetPos)?.then(() => {})?.catch(() => {})
               setCursor({ columnIndex: targetColIndex, cardIndex: targetPos })
+              fireConfetti()
             }
             return
           }
@@ -182,9 +264,20 @@ export default function useKeyboardNavigation(enabled = true) {
         }
         case "Escape":
           e.preventDefault()
-          if (cursorActive) deactivateCursor()
-          clearSelectedCard()
+          if (selectedCard) {
+            clearSelectedCard()
+          } else if (cursorActive) {
+            deactivateCursor()
+          } else if (onEscapeEmpty) {
+            onEscapeEmpty()
+          }
           break
+        case "n": {
+          e.preventDefault()
+          const col = cursorActive ? COLUMNS[columnIndex] : COLUMNS[0]
+          setNewCardColumn(col)
+          break
+        }
         case "d": {
           e.preventDefault()
           const card = getFocusedCard()
@@ -203,6 +296,7 @@ export default function useKeyboardNavigation(enabled = true) {
             const targetPos = Math.min(cardIndex, targetCards.length)
             moveCard(card.id, newCol, targetPos)?.then(() => {})?.catch(() => {})
             setCursor({ columnIndex: targetColIndex, cardIndex: targetPos })
+            fireConfetti()
           }
           break
         }
@@ -210,6 +304,7 @@ export default function useKeyboardNavigation(enabled = true) {
           e.preventDefault()
           const card = getFocusedCard()
           if (card && columnIndex > 0) {
+            showInsult()
             const targetColIndex = columnIndex - 1
             const newCol = COLUMNS[targetColIndex]
             const targetCards = getColumnCards(targetColIndex)

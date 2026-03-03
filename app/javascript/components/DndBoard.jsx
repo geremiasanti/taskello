@@ -16,6 +16,8 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { useCardStore } from "../stores/cardStore"
+import { useUiStore } from "../stores/uiStore"
+import { fireConfetti, showInsult } from "../hooks/useKeyboardNavigation"
 import CardPreview from "./CardPreview"
 import CardForm from "./CardForm"
 import Button from "./ui/Button"
@@ -43,7 +45,10 @@ function SortableCard({ card }) {
 }
 
 function DroppableColumn({ column, label, cards, board }) {
-  const [showForm, setShowForm] = useState(false)
+  const newCardColumn = useUiStore((s) => s.newCardColumn)
+  const clearNewCardColumn = useUiStore((s) => s.clearNewCardColumn)
+  const showForm = newCardColumn === column
+  const setShowForm = (val) => val ? useUiStore.getState().setNewCardColumn(column) : clearNewCardColumn()
   const cardIds = cards.map((c) => `card-${c.id}`)
 
   const { setNodeRef } = useSortable({
@@ -98,10 +103,13 @@ export default function DndBoard({ columns, columnCards, board }) {
     return card?.column
   }
 
+  const [dragOriginColumn, setDragOriginColumn] = useState(null)
+
   const handleDragStart = (event) => {
     const { active } = event
     if (active.data.current?.type === "card") {
       setActiveCard(active.data.current.card)
+      setDragOriginColumn(active.data.current.card.column)
     }
   }
 
@@ -148,7 +156,15 @@ export default function DndBoard({ columns, columnCards, board }) {
       targetPosition = overIndex >= 0 ? overIndex : colCards.length
     }
 
+    const COLS = ["todo", "doing", "done"]
+    const originIdx = COLS.indexOf(dragOriginColumn)
+    const targetIdx = COLS.indexOf(targetColumn)
     moveCard(cardId, targetColumn, targetPosition)
+    if (dragOriginColumn && targetColumn !== dragOriginColumn) {
+      if (targetIdx > originIdx) fireConfetti()
+      else if (targetIdx < originIdx) setTimeout(() => showInsult(), 100)
+    }
+    setDragOriginColumn(null)
   }
 
   return (

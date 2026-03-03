@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useCardStore } from "../stores/cardStore"
+import { fireConfetti } from "../hooks/useKeyboardNavigation"
 import Button from "./ui/Button"
 
 export default function CardForm({ boardId, column, card, onSuccess, onCancel }) {
@@ -17,6 +18,7 @@ export default function CardForm({ boardId, column, card, onSuccess, onCancel })
         await updateCard(card.id, { title })
       } else {
         await createCard({ title, board_id: boardId, column })
+        fireConfetti()
       }
       setTitle("")
       onSuccess?.()

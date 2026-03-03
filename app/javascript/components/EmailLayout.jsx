@@ -1,13 +1,17 @@
 import React from "react"
 import { useCardStore } from "../stores/cardStore"
+import { useUiStore } from "../stores/uiStore"
 import CardPreview from "./CardPreview"
 import CardDetailPanel from "./CardDetailPanel"
+import CardForm from "./CardForm"
 
 const COLUMN_LABELS = { todo: "To Do", doing: "In Progress", done: "Done" }
 const COLUMN_COLORS = { todo: "#57ab5a", doing: "#d29922", done: "#539bf5" }
 
 export default function EmailLayout({ columns, columnCards, board }) {
   const selectedCard = useCardStore((s) => s.selectedCard)
+  const newCardColumn = useUiStore((s) => s.newCardColumn)
+  const clearNewCardColumn = useUiStore((s) => s.clearNewCardColumn)
 
   return (
     <div className="flex-1 flex overflow-hidden">
@@ -18,6 +22,11 @@ export default function EmailLayout({ columns, columnCards, board }) {
               <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLUMN_COLORS[col] }} />
               {COLUMN_LABELS[col]} ({columnCards(col).length})
             </div>
+            {newCardColumn === col && (
+              <div className="px-2 pb-2">
+                <CardForm boardId={board.id} column={col} onSuccess={clearNewCardColumn} onCancel={clearNewCardColumn} />
+              </div>
+            )}
             <div className="px-2 pb-2 space-y-1">
               {columnCards(col).map((card) => (
                 <CardPreview key={card.id} card={card} />

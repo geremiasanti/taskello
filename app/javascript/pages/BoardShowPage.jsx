@@ -37,7 +37,7 @@ export default function BoardShowPage() {
   const kbdEnabled = layout === "email"
     ? !showEdit && !showMembers
     : !selectedCard && !showEdit && !showMembers
-  useKeyboardNavigation(kbdEnabled)
+  useKeyboardNavigation(kbdEnabled, { onEscapeEmpty: () => navigate("/boards") })
 
   useEffect(() => {
     fetchBoard(id)
