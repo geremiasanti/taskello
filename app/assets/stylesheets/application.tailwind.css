@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+/* ========================================
+   Taskello Theme System
+   3 themes: light (default), dark, gruvbox
+   ======================================== */
+
+:root {
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f6f8fa;
+  --color-bg-tertiary: #eaeef2;
+  --color-bg-overlay: #ffffff;
+  --color-border: #d0d7de;
+  --color-border-subtle: #eaeef2;
+  --color-text: #1f2328;
+  --color-text-secondary: #656d76;
+  --color-text-muted: #8b949e;
+  --color-primary: #0969da;
+  --color-primary-hover: #0550ae;
+  --color-primary-text: #ffffff;
+  --color-success: #1a7f37;
+  --color-danger: #cf222e;
+  --color-danger-hover: #a40e26;
+  --color-warning: #9a6700;
+  --color-nav-bg: #24292f;
+  --color-nav-text: #ffffff;
+  --color-card-bg: #ffffff;
+  --color-card-shadow: rgba(31, 35, 40, 0.12);
+  --color-column-bg: #f6f8fa;
+  --color-input-bg: #ffffff;
+  --color-input-border: #d0d7de;
+  --color-focus-ring: #0969da;
+  --color-kbd-bg: #f6f8fa;
+  --color-kbd-border: #d0d7de;
+}
+
+[data-theme="dark"] {
+  --color-bg: #0d1117;
+  --color-bg-secondary: #161b22;
+  --color-bg-tertiary: #21262d;
+  --color-bg-overlay: #1c2128;
+  --color-border: #30363d;
+  --color-border-subtle: #21262d;
+  --color-text: #e6edf3;
+  --color-text-secondary: #8b949e;
+  --color-text-muted: #6e7681;
+  --color-primary: #539bf5;
+  --color-primary-hover: #4184e4;
+  --color-primary-text: #ffffff;
+  --color-success: #3fb950;
+  --color-danger: #f85149;
+  --color-danger-hover: #da3633;
+  --color-warning: #d29922;
+  --color-nav-bg: #161b22;
+  --color-nav-text: #e6edf3;
+  --color-card-bg: #161b22;
+  --color-card-shadow: rgba(0, 0, 0, 0.3);
+  --color-column-bg: #161b22;
+  --color-input-bg: #0d1117;
+  --color-input-border: #30363d;
+  --color-focus-ring: #539bf5;
+  --color-kbd-bg: #161b22;
+  --color-kbd-border: #30363d;
+}
+
+[data-theme="gruvbox"] {
+  --color-bg: #282828;
+  --color-bg-secondary: #3c3836;
+  --color-bg-tertiary: #504945;
+  --color-bg-overlay: #3c3836;
+  --color-border: #665c54;
+  --color-border-subtle: #504945;
+  --color-text: #ebdbb2;
+  --color-text-secondary: #bdae93;
+  --color-text-muted: #a89984;
+  --color-primary: #83a598;
+  --color-primary-hover: #689d6a;
+  --color-primary-text: #282828;
+  --color-success: #b8bb26;
+  --color-danger: #fb4934;
+  --color-danger-hover: #cc241d;
+  --color-warning: #fabd2f;
+  --color-nav-bg: #1d2021;
+  --color-nav-text: #ebdbb2;
+  --color-card-bg: #3c3836;
+  --color-card-shadow: rgba(0, 0, 0, 0.3);
+  --color-column-bg: #3c3836;
+  --color-input-bg: #282828;
+  --color-input-border: #665c54;
+  --color-focus-ring: #83a598;
+  --color-kbd-bg: #3c3836;
+  --color-kbd-border: #665c54;
+}
+
+/* ========================================
+   Base styles
+   ======================================== */
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: -2px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
