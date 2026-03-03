@@ -34,7 +34,10 @@ export default function BoardShowPage() {
   const [showMembers, setShowMembers] = useState(false)
 
   useBoardChannel(board?.id)
-  useKeyboardNavigation(layout === "kanban" && !selectedCard && !showEdit && !showMembers)
+  const kbdEnabled = layout === "email"
+    ? !showEdit && !showMembers
+    : !selectedCard && !showEdit && !showMembers
+  useKeyboardNavigation(kbdEnabled)
 
   useEffect(() => {
     fetchBoard(id)

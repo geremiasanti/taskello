@@ -8,6 +8,7 @@ export default function useKeyboardNavigation(enabled = true) {
   const cursor = useUiStore((s) => s.cursor)
   const setCursor = useUiStore((s) => s.setCursor)
   const toggleKeyboardLegend = useUiStore((s) => s.toggleKeyboardLegend)
+  const layout = useUiStore((s) => s.layout)
   const cards = useCardStore((s) => s.cards)
   const selectCard = useCardStore((s) => s.selectCard)
   const clearSelectedCard = useCardStore((s) => s.clearSelectedCard)
@@ -198,9 +199,21 @@ export default function useKeyboardNavigation(enabled = true) {
     const card = getFocusedCard()
     if (card) {
       const el = document.querySelector(`[data-card-id="${card.id}"]`)
-      if (el) el.style.outline = "2px solid var(--color-focus-ring)"
+      if (el) {
+        el.style.outline = "2px solid var(--color-focus-ring)"
+        el.scrollIntoView?.({ block: "nearest" })
+      }
     }
   }, [cursor, cards, getFocusedCard])
+
+  // In email layout, auto-select card under cursor for detail panel
+  useEffect(() => {
+    if (!enabled || layout !== "email") return
+    const card = getFocusedCard()
+    if (card && card.id !== selectedCard?.id) {
+      selectCard(card)
+    }
+  }, [cursor, layout, enabled, getFocusedCard])
 
   return { cursor, getFocusedCard }
 }
