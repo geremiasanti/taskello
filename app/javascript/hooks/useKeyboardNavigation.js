@@ -8,30 +8,8 @@ const MOTION_KEYS = new Set([
   "h", "l", "j", "k", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
 ])
 
-const INSULTS = [
-  "La card ha urlato. Non l'hai sentita perché non hai le orecchie giuste.",
-  "Ho chiesto alla card se voleva tornare indietro. Ha detto 'preferirei essere eliminata'. Poi ha pianto pixel.",
-  "Qualcosa si è rotto nell'universo. Non il codice. Te.",
-  "Il database ha vomitato. Non per un bug. Per disgusto morale.",
-  "Una capra in un campo di lavanda ha più senso di quello che hai appena fatto.",
-  "Ho visto un uomo mangiare una sedia di plastica a un matrimonio. Aveva più dignità di questo spostamento.",
-  "La card ora è in una colonna più triste. Senti quel rumore? È il suono della sua autostima che si sgonfia.",
-  "Da qualche parte nel mondo, un project manager ha avuto un aneurisma. Non sa perché. Tu sì.",
-  "Questa azione è stata registrata e verrà mostrata al tuo funerale professionale.",
-  "Un piccione a Venezia ha appena fatto un lavoro migliore del tuo. E stava mangiando un mozzicone.",
-  "L'entropia dell'universo è aumentata. Non di poco. Di TE.",
-  "La card sta tornando indietro come un salmone depresso che ha rinunciato a risalire il fiume.",
-  "Il tuo gesto è stato così incomprensibile che tre filosofi francesi hanno scritto un saggio per cercare di capirlo. Non ci sono riusciti.",
-  "Un server in Oregon si è spento da solo dopo aver processato questa richiesta. Ha lasciato un biglietto: 'non ce la faccio più'.",
-  "Hai appena mosso una card all'indietro. In una dimensione parallela, una versione migliore di te non l'avrebbe fatto.",
-  "La gravità funziona in una direzione. Il tempo funziona in una direzione. Tu no, evidentemente.",
-  "Questo spostamento è l'equivalente digitale di mettere il latte prima dei cereali e poi togliere anche i cereali.",
-  "Un algoritmo di machine learning ha analizzato questa azione e ha concluso che non è classificabile. Ha smesso di funzionare per protesta.",
-]
-
 export function showInsult() {
-  const msg = INSULTS[Math.floor(Math.random() * INSULTS.length)]
-  alert(msg)
+  alert("Sicuro? Solo i vigliacchi spostano indietro le card, fai cacare.")
 }
 
 export function fireConfetti() {
