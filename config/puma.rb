@@ -12,7 +12,9 @@ min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
 threads min_threads_count, max_threads_count
 
 # Specifies that the worker count should equal the number of processors in production.
-if ENV["RAILS_ENV"] == "production"
+# Use workers only when Redis is available for ActionCable.
+# The async adapter requires single-process mode to broadcast across connections.
+if ENV["RAILS_ENV"] == "production" && ENV["REDIS_URL"]
   require "concurrent-ruby"
   worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { Concurrent.physical_processor_count })
   workers worker_count if worker_count > 1
