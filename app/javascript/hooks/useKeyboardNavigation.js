@@ -15,36 +15,38 @@ export function fireConfetti() {
   const ctx = canvas.getContext("2d")
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
-  const cx = canvas.width / 2
-  const cy = canvas.height / 2
+  // Random origin point along any edge or random spot
+  const ox = Math.random() * canvas.width
+  const oy = Math.random() * canvas.height
+  // Random cone direction
+  const coneDir = Math.random() * Math.PI * 2
+  const coneSpread = 0.6 // ~35 degrees half-angle
   const colors = ["#e5534b", "#539bf5", "#57ab5a", "#d29922", "#b083f0", "#f0883e", "#f778ba", "#ff6b6b", "#ffd93d", "#6bcb77"]
-  const particles = Array.from({ length: 120 }, () => {
-    const angle = Math.random() * Math.PI * 2
-    const speed = Math.random() * 8 + 4
+  const particles = Array.from({ length: 100 }, () => {
+    const angle = coneDir + (Math.random() - 0.5) * coneSpread * 2
+    const speed = Math.random() * 10 + 5
     return {
-      x: cx,
-      y: cy,
+      x: ox, y: oy,
       vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - 3,
-      size: Math.random() * 8 + 4,
+      vy: Math.sin(angle) * speed,
+      size: Math.random() * 7 + 3,
       color: colors[Math.floor(Math.random() * colors.length)],
       rot: Math.random() * 360,
       rv: (Math.random() - 0.5) * 15,
-      opacity: 1,
     }
   })
   let frame = 0
   const animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
+    const opacity = Math.max(0, 1 - frame / 80)
     particles.forEach((p) => {
       p.x += p.vx
       p.y += p.vy
-      p.vy += 0.12
-      p.vx *= 0.99
+      p.vy += 0.15
+      p.vx *= 0.98
       p.rot += p.rv
-      p.opacity = Math.max(0, 1 - frame / 100)
       ctx.save()
-      ctx.globalAlpha = p.opacity
+      ctx.globalAlpha = opacity
       ctx.translate(p.x, p.y)
       ctx.rotate((p.rot * Math.PI) / 180)
       ctx.fillStyle = p.color
@@ -52,7 +54,7 @@ export function fireConfetti() {
       ctx.restore()
     })
     frame++
-    if (frame < 100) requestAnimationFrame(animate)
+    if (frame < 80) requestAnimationFrame(animate)
     else canvas.remove()
   }
   requestAnimationFrame(animate)
