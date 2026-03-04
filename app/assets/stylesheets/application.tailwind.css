@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+.card-preview:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+[data-theme="dark"] .card-preview:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+[data-theme="gruvbox"] .card-preview:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 /* ========================================
    Taskello Theme System
    3 themes: light (default), dark, gruvbox

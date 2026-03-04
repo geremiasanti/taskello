@@ -326,7 +326,7 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
         el.scrollIntoView?.({ block: "nearest" })
       }
     }
-  }, [cursor, cursorActive, cards, getFocusedCard])
+  }, [cursor, cursorActive, cards, selectedCard, getFocusedCard])
 
   // In email layout, auto-select card under cursor for detail panel
   useEffect(() => {
