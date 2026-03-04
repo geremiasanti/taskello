@@ -153,7 +153,7 @@ export default function DndBoard({ columns, columnCards, board }) {
     } else if (over.data.current?.type === "card") {
       const overCard = over.data.current.card
       targetColumn = cards.find((c) => c.id === overCard.id)?.column || overCard.column
-      const colCards = columnCards(targetColumn).filter((c) => c.id !== cardId)
+      const colCards = columnCards(targetColumn)
       const overIndex = colCards.findIndex((c) => c.id === overCard.id)
       targetPosition = overIndex >= 0 ? overIndex : colCards.length
     }
