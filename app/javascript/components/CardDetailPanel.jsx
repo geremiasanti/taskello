@@ -39,7 +39,7 @@ export default function CardDetailPanel({ card, board }) {
   }
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="p-6">
       {fullCard ? (
         <CardDetailContent
           card={fullCard}

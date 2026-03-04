@@ -15,7 +15,7 @@ export default function Modal({ isOpen, onClose, title, children, wide = false }
       <div className="fixed inset-0 bg-black/50" />
       <div
         className={`relative bg-[var(--color-bg-overlay)] rounded-lg border border-[var(--color-border)]
-          shadow-lg ${wide ? "w-full max-w-2xl" : "w-full max-w-md"} max-h-[80vh] overflow-y-auto`}
+          shadow-lg ${wide ? "w-full max-w-5xl" : "w-full max-w-md"} max-h-[80vh] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
       >
         {title ? (
