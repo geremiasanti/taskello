@@ -15,6 +15,7 @@ export const useUiStore = create((set, get) => ({
   newCardColumn: null,
   filterLabels: [],
   filterParticipants: [],
+  collapsedColumns: { todo: true, doing: false, done: true },
 
   setTheme: (theme) => {
     localStorage.setItem("taskello-theme", theme)
@@ -52,4 +53,7 @@ export const useUiStore = create((set, get) => ({
       : [...s.filterParticipants, userId]
   })),
   clearFilters: () => set({ filterLabels: [], filterParticipants: [] }),
+  toggleCollapsedColumn: (col) => set((s) => ({
+    collapsedColumns: { ...s.collapsedColumns, [col]: !s.collapsedColumns[col] }
+  })),
 }))

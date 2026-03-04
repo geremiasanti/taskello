@@ -70,6 +70,8 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
   const toggleLayout = useUiStore((s) => s.toggleLayout)
   const setNewCardColumn = useUiStore((s) => s.setNewCardColumn)
   const layout = useUiStore((s) => s.layout)
+  const collapsedColumns = useUiStore((s) => s.collapsedColumns)
+  const toggleCollapsedColumn = useUiStore((s) => s.toggleCollapsedColumn)
   const cards = useCardStore((s) => s.cards)
   const selectCard = useCardStore((s) => s.selectCard)
   const clearSelectedCard = useCardStore((s) => s.clearSelectedCard)
@@ -103,17 +105,18 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
       const tag = e.target.tagName.toLowerCase()
       if (tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable) return
 
-      // First motion key: activate cursor on first card, don't move yet
+      // First motion key: activate cursor
       if (!cursorActive && (MOTION_KEYS.has(e.key) || (e.ctrlKey || e.metaKey) && MOTION_KEYS.has(e.key))) {
         e.preventDefault()
-        setCursor({ columnIndex: 0, cardIndex: 0 })
+        // In email layout, start on first header
+        setCursor({ columnIndex: 0, cardIndex: layout === "email" ? -1 : 0 })
         return
       }
 
       // Tab without cursor: activate cursor (like a motion key)
       if (e.key === "Tab" && !cursorActive) {
         e.preventDefault()
-        setCursor({ columnIndex: 0, cardIndex: 0 })
+        setCursor({ columnIndex: 0, cardIndex: layout === "email" ? -1 : 0 })
         return
       }
 
@@ -206,12 +209,56 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
         return
       }
 
+      // Email layout navigation helpers
+      const isEmail = layout === "email"
+      const isCollapsed = (colIdx) => isEmail && collapsedColumns[COLUMNS[colIdx]]
+
+      // Move down in email: header → cards (if open) → next header
+      const emailMoveDown = () => {
+        if (cardIndex === -1) {
+          // On header: if open and has cards, go to first card; else next header
+          if (!isCollapsed(columnIndex) && colCards.length > 0) {
+            setCursor({ columnIndex, cardIndex: 0 })
+          } else if (columnIndex < COLUMNS.length - 1) {
+            setCursor({ columnIndex: columnIndex + 1, cardIndex: -1 })
+          }
+        } else if (cardIndex < colCards.length - 1) {
+          setCursor({ columnIndex, cardIndex: cardIndex + 1 })
+        } else if (columnIndex < COLUMNS.length - 1) {
+          setCursor({ columnIndex: columnIndex + 1, cardIndex: -1 })
+        }
+      }
+
+      // Move up in email: card → prev card or header → prev section last card or header
+      const emailMoveUp = () => {
+        if (cardIndex === -1) {
+          // On header: go to previous section
+          if (columnIndex > 0) {
+            const prevIdx = columnIndex - 1
+            const prevCards = getColumnCards(prevIdx)
+            if (!isCollapsed(prevIdx) && prevCards.length > 0) {
+              setCursor({ columnIndex: prevIdx, cardIndex: prevCards.length - 1 })
+            } else {
+              setCursor({ columnIndex: prevIdx, cardIndex: -1 })
+            }
+          }
+        } else if (cardIndex > 0) {
+          setCursor({ columnIndex, cardIndex: cardIndex - 1 })
+        } else {
+          // First card → go to header
+          setCursor({ columnIndex, cardIndex: -1 })
+        }
+      }
+
       switch (e.key) {
         // Navigation
         case "h":
         case "ArrowLeft":
           e.preventDefault()
-          if (columnIndex > 0) {
+          if (isEmail) {
+            // In email, h/l jump between headers
+            if (columnIndex > 0) setCursor({ columnIndex: columnIndex - 1, cardIndex: -1 })
+          } else if (columnIndex > 0) {
             const newColCards = getColumnCards(columnIndex - 1)
             setCursor({ columnIndex: columnIndex - 1, cardIndex: Math.min(cardIndex, Math.max(0, newColCards.length - 1)) })
           }
@@ -219,7 +266,9 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
         case "l":
         case "ArrowRight":
           e.preventDefault()
-          if (columnIndex < COLUMNS.length - 1) {
+          if (isEmail) {
+            if (columnIndex < COLUMNS.length - 1) setCursor({ columnIndex: columnIndex + 1, cardIndex: -1 })
+          } else if (columnIndex < COLUMNS.length - 1) {
             const newColCards = getColumnCards(columnIndex + 1)
             setCursor({ columnIndex: columnIndex + 1, cardIndex: Math.min(cardIndex, Math.max(0, newColCards.length - 1)) })
           }
@@ -227,32 +276,22 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
         case "j":
         case "ArrowDown":
           e.preventDefault()
-          if (cardIndex < colCards.length - 1) {
-            setCursor({ columnIndex, cardIndex: cardIndex + 1 })
-          } else if (layout === "email" && columnIndex < COLUMNS.length - 1) {
-            // Cross to next section in email view
-            for (let i = columnIndex + 1; i < COLUMNS.length; i++) {
-              const nextColCards = getColumnCards(i)
-              if (nextColCards.length > 0) {
-                setCursor({ columnIndex: i, cardIndex: 0 })
-                break
-              }
+          if (isEmail) {
+            emailMoveDown()
+          } else {
+            if (cardIndex < colCards.length - 1) {
+              setCursor({ columnIndex, cardIndex: cardIndex + 1 })
             }
           }
           break
         case "k":
         case "ArrowUp":
           e.preventDefault()
-          if (cardIndex > 0) {
-            setCursor({ columnIndex, cardIndex: cardIndex - 1 })
-          } else if (layout === "email" && columnIndex > 0) {
-            // Cross to previous section in email view
-            for (let i = columnIndex - 1; i >= 0; i--) {
-              const prevColCards = getColumnCards(i)
-              if (prevColCards.length > 0) {
-                setCursor({ columnIndex: i, cardIndex: prevColCards.length - 1 })
-                break
-              }
+          if (isEmail) {
+            emailMoveUp()
+          } else {
+            if (cardIndex > 0) {
+              setCursor({ columnIndex, cardIndex: cardIndex - 1 })
             }
           }
           break
@@ -260,7 +299,10 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
         // Tab: sequential navigation
         case "Tab":
           e.preventDefault()
-          if (e.shiftKey) {
+          if (isEmail) {
+            if (e.shiftKey) emailMoveUp()
+            else emailMoveDown()
+          } else if (e.shiftKey) {
             if (cardIndex > 0) {
               setCursor({ columnIndex, cardIndex: cardIndex - 1 })
             } else if (columnIndex > 0) {
@@ -279,8 +321,13 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
         // Actions
         case "Enter": {
           e.preventDefault()
-          const card = getFocusedCard()
-          if (card) selectCard(card)
+          if (isEmail && cardIndex === -1) {
+            // On header: toggle collapsed
+            toggleCollapsedColumn(COLUMNS[columnIndex])
+          } else {
+            const card = getFocusedCard()
+            if (card) selectCard(card)
+          }
           break
         }
         case "Escape":
@@ -339,20 +386,34 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
 
     document.addEventListener("keydown", handleKeydown)
     return () => document.removeEventListener("keydown", handleKeydown)
-  }, [enabled, cursor, cursorActive, cards, getColumnCards, getFocusedCard])
+  }, [enabled, cursor, cursorActive, cards, selectedCard, layout, collapsedColumns, getColumnCards, getFocusedCard])
 
-  // Highlight focused card with DOM effect — only when cursor is active
+  // Highlight focused card/header with DOM effect — only when cursor is active
   useEffect(() => {
     document.querySelectorAll("[data-card-id]").forEach((el) => {
       el.style.boxShadow = ""
     })
+    document.querySelectorAll("[data-col-header]").forEach((el) => {
+      el.style.boxShadow = ""
+    })
     if (!cursorActive) return
-    const card = getFocusedCard()
-    if (card) {
-      const el = document.querySelector(`[data-card-id="${card.id}"]`)
+    const { columnIndex, cardIndex } = cursor
+    if (cardIndex === -1) {
+      // Highlight column header
+      const col = COLUMNS[columnIndex]
+      const el = document.querySelector(`[data-col-header="${col}"]`)
       if (el) {
-        el.style.boxShadow = "0 0 0 2px var(--color-focus-ring)"
+        el.style.boxShadow = "inset 0 0 0 2px var(--color-focus-ring)"
         el.scrollIntoView?.({ block: "nearest" })
+      }
+    } else {
+      const card = getFocusedCard()
+      if (card) {
+        const el = document.querySelector(`[data-card-id="${card.id}"]`)
+        if (el) {
+          el.style.boxShadow = "0 0 0 2px var(--color-focus-ring)"
+          el.scrollIntoView?.({ block: "nearest" })
+        }
       }
     }
   }, [cursor, cursorActive, cards, selectedCard, getFocusedCard])
@@ -360,11 +421,12 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
   // In email layout, auto-select card under cursor for detail panel
   useEffect(() => {
     if (!enabled || layout !== "email" || !cursorActive) return
+    if (cursor.cardIndex === -1) return // On header, don't auto-select
     const card = getFocusedCard()
     if (card && card.id !== selectedCard?.id) {
       selectCard(card)
     }
-  }, [cursor, cursorActive, layout, enabled, getFocusedCard])
+  }, [cursor, cursorActive, layout, enabled, getFocusedCard, selectedCard])
 
   return { cursor, cursorActive, getFocusedCard }
 }

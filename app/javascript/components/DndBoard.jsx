@@ -3,7 +3,6 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
-  KeyboardSensor,
   useSensor,
   useSensors,
   closestCorners,
@@ -94,8 +93,7 @@ export default function DndBoard({ columns, columnCards, board }) {
   const setCards = useCardStore((s) => s.setCards)
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor)
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   )
 
   const findColumn = (id) => {

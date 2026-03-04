@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import { useCardStore } from "../stores/cardStore"
 import { useUiStore } from "../stores/uiStore"
 import CardPreview from "./CardPreview"
@@ -29,11 +29,8 @@ export default function EmailLayout({ columns, columnCards, board }) {
   const selectedCard = useCardStore((s) => s.selectedCard)
   const newCardColumn = useUiStore((s) => s.newCardColumn)
   const clearNewCardColumn = useUiStore((s) => s.clearNewCardColumn)
-  const [collapsed, setCollapsed] = useState({ todo: true, doing: false, done: true })
-
-  const toggleCollapsed = (col) => {
-    setCollapsed((prev) => ({ ...prev, [col]: !prev[col] }))
-  }
+  const collapsed = useUiStore((s) => s.collapsedColumns)
+  const toggleCollapsed = useUiStore((s) => s.toggleCollapsedColumn)
 
   return (
     <div className="flex-1 flex overflow-hidden">
@@ -42,6 +39,7 @@ export default function EmailLayout({ columns, columnCards, board }) {
           <div key={col} className="border-b border-[var(--color-border)]">
             <button
               onClick={() => toggleCollapsed(col)}
+              data-col-header={col}
               className="w-full flex items-center gap-1 px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide hover:bg-[var(--color-bg-tertiary)] cursor-pointer"
             >
               <ChevronIcon open={!collapsed[col]} />

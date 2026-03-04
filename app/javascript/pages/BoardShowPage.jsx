@@ -33,6 +33,10 @@ export default function BoardShowPage() {
   const filterLabels = useUiStore((s) => s.filterLabels)
   const filterParticipants = useUiStore((s) => s.filterParticipants)
   const clearFilters = useUiStore((s) => s.clearFilters)
+  const cursor = useUiStore((s) => s.cursor)
+  const cursorActive = useUiStore((s) => s.cursorActive)
+  const collapsedColumns = useUiStore((s) => s.collapsedColumns)
+  const toggleCollapsedColumn = useUiStore((s) => s.toggleCollapsedColumn)
   const user = useAuthStore((s) => s.user)
   const [showEdit, setShowEdit] = useState(false)
   const [showMembers, setShowMembers] = useState(false)
@@ -58,6 +62,14 @@ export default function BoardShowPage() {
   // Close open card when switching from email to kanban
   useEffect(() => {
     if (layout === "kanban" && selectedCard) clearSelectedCard()
+  }, [layout])
+
+  // When switching to email with a focused card, open its collapsed section
+  useEffect(() => {
+    if (layout === "email" && cursorActive && cursor.cardIndex >= 0) {
+      const col = ["todo", "doing", "done"][cursor.columnIndex]
+      if (col && collapsedColumns[col]) toggleCollapsedColumn(col)
+    }
   }, [layout])
 
   const applyFilters = useCallback((cardsList) => {
