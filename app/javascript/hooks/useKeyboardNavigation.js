@@ -344,14 +344,14 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
   // Highlight focused card with DOM effect — only when cursor is active
   useEffect(() => {
     document.querySelectorAll("[data-card-id]").forEach((el) => {
-      el.style.outline = ""
+      el.style.boxShadow = ""
     })
     if (!cursorActive) return
     const card = getFocusedCard()
     if (card) {
       const el = document.querySelector(`[data-card-id="${card.id}"]`)
       if (el) {
-        el.style.outline = "2px solid var(--color-focus-ring)"
+        el.style.boxShadow = "0 0 0 2px var(--color-focus-ring)"
         el.scrollIntoView?.({ block: "nearest" })
       }
     }

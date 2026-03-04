@@ -3,15 +3,26 @@ import { useCardStore } from "../stores/cardStore"
 import { useUiStore } from "../stores/uiStore"
 import Avatar from "./ui/Avatar"
 
+const COLUMNS = ["todo", "doing", "done"]
+
 export default function CardPreview({ card }) {
   const selectCard = useCardStore((s) => s.selectCard)
-  const cursor = useUiStore((s) => s.cursor)
+  const cards = useCardStore((s) => s.cards)
+  const setCursor = useUiStore((s) => s.setCursor)
+
+  const handleClick = () => {
+    selectCard(card)
+    const columnIndex = COLUMNS.indexOf(card.column)
+    const colCards = cards.filter((c) => c.column === card.column).sort((a, b) => a.position - b.position)
+    const cardIndex = colCards.findIndex((c) => c.id === card.id)
+    setCursor({ columnIndex, cardIndex: cardIndex >= 0 ? cardIndex : 0 })
+  }
 
   return (
     <div
-      onClick={() => selectCard(card)}
+      onClick={handleClick}
       className="card-preview p-3 rounded-md border border-[var(--color-border)] bg-[var(--color-card-bg)]
-        cursor-pointer transition-shadow shadow-md hover:shadow-lg"
+        cursor-pointer transition-shadow shadow-md hover:shadow-lg outline-none"
       data-card-id={card.id}
     >
       {card.labels && card.labels.length > 0 && (

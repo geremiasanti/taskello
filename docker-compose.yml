@@ -19,8 +19,11 @@ services:
       RAILS_ENV: production
       RAILS_MASTER_KEY: 9b710d11a9434f7742583fa42cd1cf1f
       RAILS_SERVE_STATIC_FILES: "true"
+    volumes:
+      - storage_data:/rails/storage
     depends_on:
       - db
 
 volumes:
   postgres_data:
+  storage_data:

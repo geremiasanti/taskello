@@ -1,8 +1,19 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-  ./bin/rails db:prepare
+# Always prepare database (create/migrate)
+./bin/rails db:prepare
+
+# Seed if DB is empty OR storage files are missing
+NEEDS_SEED="no"
+if ! ./bin/rails runner 'exit(User.count > 0 ? 0 : 1)' 2>/dev/null; then
+  NEEDS_SEED="yes"
+elif ! ./bin/rails runner 'b = ActiveStorage::Blob.first; exit(!b || b.service.exist?(b.key) ? 0 : 1)' 2>/dev/null; then
+  NEEDS_SEED="yes"
+fi
+
+if [ "$NEEDS_SEED" = "yes" ]; then
+  echo "Seeding database..."
+  DISABLE_DATABASE_ENVIRONMENT_CHECK=1 ./bin/rails db:seed:replant
 fi
 
 exec "${@}"

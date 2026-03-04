@@ -34,6 +34,7 @@ function SortableCard({ card }) {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.4 : 1,
+    outline: "none",
   }
 
   return (

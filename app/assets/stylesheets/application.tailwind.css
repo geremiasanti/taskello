@@ -118,6 +118,13 @@ body {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: -2px;
 }
+/* Cards use custom box-shadow focus via JS, suppress browser outline */
+[data-card-id]:focus-visible,
+[data-card-id]:focus,
+[data-card-id] *:focus-visible,
+[data-card-id] *:focus {
+  outline: none;
+}
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }

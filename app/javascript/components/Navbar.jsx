@@ -74,7 +74,7 @@ export default function Navbar() {
         <LayoutToggle />
         <ThemeSwitcher />
         <NotificationBell />
-        <div className="relative" ref={menuRef}>
+        <div className="relative ml-1" ref={menuRef}>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer

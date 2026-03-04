@@ -1,3 +1,7 @@
+# Clean Active Storage files from disk (TRUNCATE only clears DB, not disk)
+storage_root = ActiveStorage::Blob.service.root
+Dir.glob(File.join(storage_root, "[a-z0-9]*")).each { |f| FileUtils.rm_rf(f) }
+
 # Reset all sequences so IDs start from 1
 ActiveRecord::Base.connection.tables.each do |table|
   next if table == "schema_migrations" || table == "ar_internal_metadata"
@@ -22,7 +26,7 @@ AVATAR_FILES = {
 }
 
 def attach_avatar(user)
-  return if user.avatar.attached?
+  user.avatar.purge if user.avatar.attached?
   filename = AVATAR_FILES[user.username]
   return unless filename
   path = AVATARS_DIR.join(filename)
