@@ -126,10 +126,10 @@ export default function BoardsIndexPage() {
             key={board.id}
             to={`/boards/${board.id}`}
             ref={(el) => (boardRefs.current[index] = el)}
-            className={`block p-4 rounded-lg border bg-[var(--color-card-bg)] transition-colors outline-none
+            className={`block p-4 rounded-lg border bg-[var(--color-card-bg)] transition-all duration-200 outline-none
               ${index === focusedIndex
                 ? "border-[var(--color-focus-ring)]"
-                : "border-[var(--color-border)] hover:border-[var(--color-primary)]"
+                : "border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-xl hover:-translate-y-1"
               }`}
             style={index === focusedIndex ? { boxShadow: "0 0 0 2px var(--color-focus-ring)" } : undefined}
           >
