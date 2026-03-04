@@ -1,29 +1,44 @@
-require "open-uri"
+AVATARS_DIR = Rails.root.join("db", "seed_avatars")
 
-# Helper to attach avatar from URL
-def attach_avatar(user, seed_name)
+AVATAR_FILES = {
+  "admin"             => "admin.jpg",
+  "il_gatto_quantico" => "il_gatto_quantico.jpg",
+  "nonna_rambo"       => "nonna_rambo.jpg",
+  "carlo_in_acido"    => "carlo_in_acido.jpg",
+  "shrek_terapeuta"   => "shrek_terapeuta.png",
+  "mia_wallace_HR"    => "mia_wallace_HR.jpg",
+  "spongebob_CEO"     => "spongebob_CEO.png",
+  "gandalf_stagista"  => "gandalf_stagista.jpg",
+  "darth_contabile"   => "darth_contabile.jpg",
+  "mario_devops"      => "mario_devops.jpg",
+  "totoro_security"   => "totoro_security.jpg",
+  "willy_wonka_PM"    => "willy_wonka_PM.jpg",
+}
+
+def attach_avatar(user)
   return if user.avatar.attached?
-  url = "https://api.dicebear.com/7.x/pixel-art/png?seed=#{seed_name}&size=200"
-  file = URI.open(url)
-  user.avatar.attach(io: file, filename: "#{user.username}.png", content_type: "image/png")
-rescue => e
-  puts "  (avatar skip: #{e.message})"
+  filename = AVATAR_FILES[user.username]
+  return unless filename
+  path = AVATARS_DIR.join(filename)
+  return unless File.exist?(path)
+  content_type = filename.end_with?(".png") ? "image/png" : "image/jpeg"
+  user.avatar.attach(io: File.open(path), filename: filename, content_type: content_type)
 end
 
 # Users
 users_data = [
-  { username: "admin", email: "admin@taskello.dev", password: "password", avatar_seed: "admin-boss" },
-  { username: "il_gatto_quantico", email: "gatto@taskello.dev", password: "password", avatar_seed: "schrodinger-cat" },
-  { username: "nonna_rambo", email: "nonna@taskello.dev", password: "password", avatar_seed: "grandma-warrior" },
-  { username: "carlo_in_acido", email: "carlo@taskello.dev", password: "password", avatar_seed: "acid-trip-carlo" },
-  { username: "shrek_terapeuta", email: "shrek@taskello.dev", password: "password", avatar_seed: "ogre-therapist" },
-  { username: "mia_wallace_HR", email: "mia@taskello.dev", password: "password", avatar_seed: "mia-pulp-fiction" },
-  { username: "spongebob_CEO", email: "spongebob@taskello.dev", password: "password", avatar_seed: "sponge-ceo" },
-  { username: "gandalf_stagista", email: "gandalf@taskello.dev", password: "password", avatar_seed: "wizard-intern" },
-  { username: "darth_contabile", email: "darth@taskello.dev", password: "password", avatar_seed: "sith-accountant" },
-  { username: "mario_devops", email: "mario@taskello.dev", password: "password", avatar_seed: "plumber-devops" },
-  { username: "totoro_security", email: "totoro@taskello.dev", password: "password", avatar_seed: "forest-guardian" },
-  { username: "willy_wonka_PM", email: "willy@taskello.dev", password: "password", avatar_seed: "chocolate-pm" },
+  { username: "admin", email: "admin@taskello.dev", password: "password" },
+  { username: "il_gatto_quantico", email: "gatto@taskello.dev", password: "password" },
+  { username: "nonna_rambo", email: "nonna@taskello.dev", password: "password" },
+  { username: "carlo_in_acido", email: "carlo@taskello.dev", password: "password" },
+  { username: "shrek_terapeuta", email: "shrek@taskello.dev", password: "password" },
+  { username: "mia_wallace_HR", email: "mia@taskello.dev", password: "password" },
+  { username: "spongebob_CEO", email: "spongebob@taskello.dev", password: "password" },
+  { username: "gandalf_stagista", email: "gandalf@taskello.dev", password: "password" },
+  { username: "darth_contabile", email: "darth@taskello.dev", password: "password" },
+  { username: "mario_devops", email: "mario@taskello.dev", password: "password" },
+  { username: "totoro_security", email: "totoro@taskello.dev", password: "password" },
+  { username: "willy_wonka_PM", email: "willy@taskello.dev", password: "password" },
 ]
 
 users = users_data.map do |data|
@@ -33,7 +48,7 @@ users = users_data.map do |data|
   end
 end
 
-users_data.each_with_index { |data, i| attach_avatar(users[i], data[:avatar_seed]) }
+users.each { |u| attach_avatar(u) }
 
 admin, gatto, nonna, carlo, shrek, mia, spongebob, gandalf, darth, mario, totoro, willy = users
 
