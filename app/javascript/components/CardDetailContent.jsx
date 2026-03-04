@@ -111,66 +111,78 @@ export default function CardDetailContent({ card, board, onUpdate, onDelete, onR
         </div>
       </div>
 
-      {/* Description */}
-      <div className="mb-4">
-        {editingDesc ? (
-          <div className="space-y-2">
-            <RichTextEditor
-              content={description}
-              onChange={setDescription}
-              placeholder="Add a description..."
-              members={board?.members}
-              autoFocus
-            />
-            <div className="flex gap-2">
-              <Button size="sm" onClick={handleSaveDesc}>Save</Button>
-              <Button size="sm" variant="ghost" onClick={() => setEditingDesc(false)}>Cancel</Button>
-            </div>
-          </div>
-        ) : (
-          <div className="group relative">
-            <div className="flex items-center gap-1 mb-1">
-              <span className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide">Description</span>
-              <button
-                onClick={() => setEditingDesc(true)}
-                className="p-0.5 rounded hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                title="Edit description"
-              >
-                <PencilIcon size={12} />
-              </button>
-            </div>
-            {card.description ? (
-              <div
-                className="rendered-html text-sm text-[var(--color-text)] cursor-text"
-                dangerouslySetInnerHTML={{ __html: card.description }}
-                onClick={handleTextClick(setEditingDesc, descClickTimer)}
-              />
+      {/* Two-column layout: details left, comments right (when space allows) */}
+      <div className="flex flex-col xl:flex-row xl:gap-6">
+        {/* Left: card details */}
+        <div className="flex-1 min-w-0">
+          {/* Description */}
+          <div className="mb-4">
+            {editingDesc ? (
+              <div className="space-y-2">
+                <RichTextEditor
+                  content={description}
+                  onChange={setDescription}
+                  placeholder="Add a description..."
+                  members={board?.members}
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={handleSaveDesc}>Save</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setEditingDesc(false)}>Cancel</Button>
+                </div>
+              </div>
             ) : (
-              <p
-                className="text-sm text-[var(--color-text-muted)] italic cursor-pointer hover:text-[var(--color-text)]"
-                onClick={() => setEditingDesc(true)}
-              >
-                Add a description...
-              </p>
+              <div className="group relative">
+                <div className="flex items-center gap-1 mb-1">
+                  <span className="text-xs font-medium text-[var(--color-text-muted)] uppercase tracking-wide">Description</span>
+                  <button
+                    onClick={() => setEditingDesc(true)}
+                    className="p-0.5 rounded hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Edit description"
+                  >
+                    <PencilIcon size={12} />
+                  </button>
+                </div>
+                {card.description ? (
+                  <div
+                    className="rendered-html text-sm text-[var(--color-text)] cursor-text"
+                    dangerouslySetInnerHTML={{ __html: card.description }}
+                    onClick={handleTextClick(setEditingDesc, descClickTimer)}
+                  />
+                ) : (
+                  <p
+                    className="text-sm text-[var(--color-text-muted)] italic cursor-pointer hover:text-[var(--color-text)]"
+                    onClick={() => setEditingDesc(true)}
+                  >
+                    Add a description...
+                  </p>
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
 
-      <div className="border-t border-[var(--color-border)] pt-3">
-        <LabelPicker card={card} board={board} onRefresh={onRefresh} />
-      </div>
+          <div className="border-t border-[var(--color-border)] pt-3">
+            <LabelPicker card={card} board={board} onRefresh={onRefresh} />
+          </div>
 
-      <div className="border-t border-[var(--color-border)] pt-3 mt-3">
-        <ParticipantsList card={card} board={board} onRefresh={onRefresh} />
-      </div>
+          <div className="border-t border-[var(--color-border)] pt-3 mt-3">
+            <ParticipantsList card={card} board={board} onRefresh={onRefresh} />
+          </div>
 
-      <div className="border-t border-[var(--color-border)] pt-3 mt-3">
-        <AttachmentSection card={card} onRefresh={onRefresh} />
-      </div>
+          <div className="border-t border-[var(--color-border)] pt-3 mt-3">
+            <AttachmentSection card={card} onRefresh={onRefresh} />
+          </div>
 
-      <div className="border-t border-[var(--color-border)] pt-3 mt-3">
-        <CommentSection card={card} board={board} onRefresh={onRefresh} />
+          {/* Comments below on small screens */}
+          <div className="xl:hidden border-t border-[var(--color-border)] pt-3 mt-3">
+            <CommentSection card={card} board={board} onRefresh={onRefresh} />
+          </div>
+        </div>
+
+        {/* Right: comments column (only on wide screens) */}
+        <div className="hidden xl:block xl:w-80 xl:shrink-0 xl:border-l xl:border-[var(--color-border)] xl:pl-6">
+          <CommentSection card={card} board={board} onRefresh={onRefresh} />
+        </div>
       </div>
     </div>
   )
