@@ -54,7 +54,7 @@ module Api
           id: user.id,
           username: user.username,
           email: user.email,
-          avatar_url: user.avatar.attached? ? url_for(user.avatar) : nil,
+          avatar_url: user.avatar.attached? ? rails_blob_path(user.avatar, only_path: true) : nil,
           created_at: user.created_at
         }
       end

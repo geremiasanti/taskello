@@ -1,6 +1,7 @@
 import React from "react"
 import { useCardStore } from "../stores/cardStore"
 import { useUiStore } from "../stores/uiStore"
+import Avatar from "./ui/Avatar"
 
 export default function CardPreview({ card }) {
   const selectCard = useCardStore((s) => s.selectCard)
@@ -29,9 +30,7 @@ export default function CardPreview({ card }) {
       {card.participants && card.participants.length > 0 && (
         <div className="flex gap-1 mt-2">
           {card.participants.slice(0, 3).map((p) => (
-            <span key={p.id} className="w-5 h-5 rounded-full bg-[var(--color-bg-tertiary)] text-[10px] flex items-center justify-center text-[var(--color-text-secondary)]">
-              {p.username[0].toUpperCase()}
-            </span>
+            <Avatar key={p.id} user={p} size="sm" className="!w-5 !h-5 !text-[10px]" />
           ))}
           {card.participants.length > 3 && (
             <span className="text-xs text-[var(--color-text-muted)]">+{card.participants.length - 3}</span>

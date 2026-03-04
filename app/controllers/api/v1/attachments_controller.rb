@@ -38,7 +38,7 @@ module Api
         {
           id: a.id,
           attachment_type: a.attachment_type,
-          url: a.attachment_type == "link" ? a.url : (a.file.attached? ? url_for(a.file) : nil),
+          url: a.attachment_type == "link" ? a.url : (a.file.attached? ? rails_blob_path(a.file, only_path: true) : nil),
           link_text: a.link_text,
           filename: a.file.attached? ? a.file.filename.to_s : nil,
           created_at: a.created_at,

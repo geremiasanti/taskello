@@ -9,10 +9,10 @@ json.members @board.members do |member|
   json.id member.id
   json.username member.username
   json.email member.email
-  json.avatar_url member.avatar.attached? ? url_for(member.avatar) : nil
+  json.avatar_url member.avatar.attached? ? rails_blob_path(member.avatar, only_path: true) : nil
 end
 
-json.cards @board.cards.includes(:labels, :participants, :creator).order(:column, :position) do |card|
+json.cards @board.cards.includes(:labels, { participants: :avatar_attachment }, :creator).order(:column, :position) do |card|
   json.id card.id
   json.title card.title
   json.description card.description
@@ -29,6 +29,7 @@ json.cards @board.cards.includes(:labels, :participants, :creator).order(:column
   json.participants card.participants do |participant|
     json.id participant.id
     json.username participant.username
+    json.avatar_url participant.avatar.attached? ? rails_blob_path(participant.avatar, only_path: true) : nil
   end
 end
 

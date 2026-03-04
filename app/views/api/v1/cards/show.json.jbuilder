@@ -17,7 +17,7 @@ end
 json.participants @card.participants do |participant|
   json.id participant.id
   json.username participant.username
-  json.avatar_url participant.avatar.attached? ? url_for(participant.avatar) : nil
+  json.avatar_url participant.avatar.attached? ? rails_blob_path(participant.avatar, only_path: true) : nil
 end
 
 json.comments @card.comments.includes(:user).order(created_at: :asc) do |comment|
@@ -27,13 +27,14 @@ json.comments @card.comments.includes(:user).order(created_at: :asc) do |comment
   json.user do
     json.id comment.user.id
     json.username comment.user.username
+    json.avatar_url comment.user.avatar.attached? ? rails_blob_path(comment.user.avatar, only_path: true) : nil
   end
 end
 
 json.attachments @card.attachments.includes(:user) do |attachment|
   json.id attachment.id
   json.attachment_type attachment.attachment_type
-  json.url attachment.attachment_type == "link" ? attachment.url : (attachment.file.attached? ? url_for(attachment.file) : nil)
+  json.url attachment.attachment_type == "link" ? attachment.url : (attachment.file.attached? ? rails_blob_path(attachment.file, only_path: true) : nil)
   json.link_text attachment.link_text
   json.filename attachment.file.attached? ? attachment.file.filename.to_s : nil
   json.created_at attachment.created_at
