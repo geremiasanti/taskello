@@ -22,7 +22,7 @@ export default function CardPreview({ card }) {
     <div
       onClick={handleClick}
       className="card-preview p-3 rounded-md border border-[var(--color-border)] bg-[var(--color-card-bg)]
-        cursor-pointer transition-all duration-200 shadow-sm hover:shadow-xl hover:-translate-y-1 outline-none"
+        cursor-pointer transition-all duration-200 shadow-sm hover:shadow-2xl hover:-translate-y-2 outline-none"
       data-card-id={card.id}
     >
       {card.labels && card.labels.length > 0 && (

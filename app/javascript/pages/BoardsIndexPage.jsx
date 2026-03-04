@@ -129,7 +129,7 @@ export default function BoardsIndexPage() {
             className={`block p-4 rounded-lg border bg-[var(--color-card-bg)] transition-all duration-200 outline-none
               ${index === focusedIndex
                 ? "border-[var(--color-focus-ring)]"
-                : "border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-xl hover:-translate-y-1"
+                : "border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-2xl hover:-translate-y-2"
               }`}
             style={index === focusedIndex ? { boxShadow: "0 0 0 2px var(--color-focus-ring)" } : undefined}
           >
