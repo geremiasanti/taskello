@@ -111,9 +111,14 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
       }
 
       // Tab without cursor: activate cursor (like a motion key)
-      if (e.key === "Tab" && !cursorActive && !e.ctrlKey && !e.metaKey) {
+      // Shift+Tab without cursor: toggle layout
+      if (e.key === "Tab" && !cursorActive) {
         e.preventDefault()
-        setCursor({ columnIndex: 0, cardIndex: 0 })
+        if (e.shiftKey) {
+          toggleLayout()
+        } else {
+          setCursor({ columnIndex: 0, cardIndex: 0 })
+        }
         return
       }
 
@@ -121,11 +126,6 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
       if (e.key === "?") {
         e.preventDefault()
         toggleKeyboardLegend()
-        return
-      }
-      if (e.key === "Tab" && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault()
-        toggleLayout()
         return
       }
       if (e.key === "n" && !cursorActive) {
@@ -148,13 +148,6 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
 
       const { columnIndex, cardIndex } = cursor
       const colCards = getColumnCards(columnIndex)
-
-      // Ctrl+Tab: toggle layout (works with or without active cursor)
-      if (e.key === "Tab" && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault()
-        toggleLayout()
-        return
-      }
 
       // Ctrl + motion = move card to adjacent position
       if (e.ctrlKey || e.metaKey) {
