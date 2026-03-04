@@ -60,7 +60,7 @@ export default function CardDetailContent({ card, board, onUpdate, onDelete, onR
   }, [])
 
   return (
-    <div>
+    <div className="@container">
       {/* Header with colored background */}
       <div className="bg-[var(--color-bg-secondary)] rounded-t-md px-4 py-3 -mx-4 -mt-4 mb-4 border-b border-[var(--color-border)]">
         <div className="flex items-center justify-between gap-2">
@@ -112,7 +112,7 @@ export default function CardDetailContent({ card, board, onUpdate, onDelete, onR
       </div>
 
       {/* Two-column layout: details left, comments right (when space allows) */}
-      <div className="flex flex-col xl:flex-row xl:gap-6">
+      <div className="flex flex-col @min-[640px]:flex-row @min-[640px]:gap-6">
         {/* Left: card details */}
         <div className="flex-1 min-w-0">
           {/* Description */}
@@ -174,13 +174,13 @@ export default function CardDetailContent({ card, board, onUpdate, onDelete, onR
           </div>
 
           {/* Comments below on small screens */}
-          <div className="xl:hidden border-t border-[var(--color-border)] pt-3 mt-3">
+          <div className="@min-[640px]:hidden border-t border-[var(--color-border)] pt-3 mt-3">
             <CommentSection card={card} board={board} onRefresh={onRefresh} />
           </div>
         </div>
 
         {/* Right: comments column (only on wide screens) */}
-        <div className="hidden xl:block xl:w-80 xl:shrink-0 xl:border-l xl:border-[var(--color-border)] xl:pl-6">
+        <div className="hidden @min-[640px]:block @min-[640px]:w-80 @min-[640px]:shrink-0 @min-[640px]:border-l @min-[640px]:border-[var(--color-border)] @min-[640px]:pl-6">
           <CommentSection card={card} board={board} onRefresh={onRefresh} />
         </div>
       </div>
