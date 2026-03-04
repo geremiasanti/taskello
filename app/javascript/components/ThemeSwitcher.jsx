@@ -1,5 +1,6 @@
-import React, { useState } from "react"
+import React, { useState, useCallback } from "react"
 import { useUiStore } from "../stores/uiStore"
+import useClickOutside from "../hooks/useClickOutside"
 
 const SunIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -37,11 +38,12 @@ export default function ThemeSwitcher() {
   const theme = useUiStore((s) => s.theme)
   const setTheme = useUiStore((s) => s.setTheme)
   const [open, setOpen] = useState(false)
+  const ref = useClickOutside(useCallback(() => setOpen(false), []))
 
   const icon = theme === "light" ? <SunIcon /> : theme === "dark" ? <MoonIcon /> : <PaletteIcon />
 
   return (
-    <div className="relative">
+    <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
         className="px-2 py-1.5 rounded hover:bg-white/10 cursor-pointer leading-none flex items-center"

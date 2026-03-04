@@ -29,4 +29,18 @@ class BoardChannel < ApplicationCable::Channel
   def self.broadcast_board_update(board, action, data = {})
     broadcast_to(board, { type: "board_update", action: action, **data })
   end
+
+  def self.broadcast_comment(board, card, comment, action)
+    broadcast_to(board, {
+      type: "comment_update",
+      action: action,
+      card_id: card.id,
+      comment: {
+        id: comment.id,
+        body: comment.body,
+        created_at: comment.created_at,
+        user: { id: comment.user.id, username: comment.user.username }
+      }
+    })
+  end
 end

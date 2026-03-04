@@ -1,5 +1,13 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { useNotificationStore } from "../stores/notificationStore"
+import useClickOutside from "../hooks/useClickOutside"
+
+const BellIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+  </svg>
+)
 
 export default function NotificationBell() {
   const unreadCount = useNotificationStore((s) => s.unreadCount)
@@ -8,15 +16,16 @@ export default function NotificationBell() {
   const markAsRead = useNotificationStore((s) => s.markAsRead)
   const markAllAsRead = useNotificationStore((s) => s.markAllAsRead)
   const [open, setOpen] = useState(false)
+  const ref = useClickOutside(useCallback(() => setOpen(false), []))
 
   useEffect(() => {
     fetchNotifications()
   }, [])
 
   return (
-    <div className="relative">
-      <button onClick={() => setOpen(!open)} className="relative text-base px-2 py-1 rounded hover:bg-white/10 cursor-pointer leading-none">
-        {"\u{1F514}"}
+    <div className="relative" ref={ref}>
+      <button onClick={() => setOpen(!open)} className="relative px-2 py-1.5 rounded hover:bg-white/10 cursor-pointer leading-none flex items-center">
+        <BellIcon />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-[var(--color-primary)] text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
             {unreadCount > 9 ? "9+" : unreadCount}

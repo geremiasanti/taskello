@@ -1,17 +1,9 @@
 import { useEffect, useRef } from "react"
 import { useCardStore } from "../stores/cardStore"
-import { createConsumer } from "@rails/actioncable"
-
-let consumer = null
-function getConsumer() {
-  if (!consumer) consumer = createConsumer()
-  return consumer
-}
+import { getConsumer } from "../lib/consumer"
 
 export default function useBoardChannel(boardId) {
   const subRef = useRef(null)
-  const setCards = useCardStore((s) => s.setCards)
-  const cards = useCardStore((s) => s.cards)
 
   useEffect(() => {
     if (!boardId) return
@@ -37,6 +29,12 @@ export default function useBoardChannel(boardId) {
             useCardStore.setState((state) => ({
               cards: state.cards.filter((c) => c.id !== data.card_id),
             }))
+          }
+          if (data.type === "comment_update" && data.action === "created") {
+            window.dispatchEvent(new CustomEvent("cable:comment", { detail: data }))
+          }
+          if (data.type === "board_update" && data.action === "comment_deleted") {
+            window.dispatchEvent(new CustomEvent("cable:comment_deleted", { detail: data }))
           }
         },
       }

@@ -111,18 +111,18 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
       }
 
       // Tab without cursor: activate cursor (like a motion key)
-      // Shift+Tab without cursor: toggle layout
       if (e.key === "Tab" && !cursorActive) {
         e.preventDefault()
-        if (e.shiftKey) {
-          toggleLayout()
-        } else {
-          setCursor({ columnIndex: 0, cardIndex: 0 })
-        }
+        setCursor({ columnIndex: 0, cardIndex: 0 })
         return
       }
 
       // These work even without active cursor
+      if (e.key === "v" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault()
+        toggleLayout()
+        return
+      }
       if (e.key === "?") {
         e.preventDefault()
         toggleKeyboardLegend()
@@ -227,12 +227,34 @@ export default function useKeyboardNavigation(enabled = true, { onEscapeEmpty } 
         case "j":
         case "ArrowDown":
           e.preventDefault()
-          if (cardIndex < colCards.length - 1) setCursor({ columnIndex, cardIndex: cardIndex + 1 })
+          if (cardIndex < colCards.length - 1) {
+            setCursor({ columnIndex, cardIndex: cardIndex + 1 })
+          } else if (layout === "email" && columnIndex < COLUMNS.length - 1) {
+            // Cross to next section in email view
+            for (let i = columnIndex + 1; i < COLUMNS.length; i++) {
+              const nextColCards = getColumnCards(i)
+              if (nextColCards.length > 0) {
+                setCursor({ columnIndex: i, cardIndex: 0 })
+                break
+              }
+            }
+          }
           break
         case "k":
         case "ArrowUp":
           e.preventDefault()
-          if (cardIndex > 0) setCursor({ columnIndex, cardIndex: cardIndex - 1 })
+          if (cardIndex > 0) {
+            setCursor({ columnIndex, cardIndex: cardIndex - 1 })
+          } else if (layout === "email" && columnIndex > 0) {
+            // Cross to previous section in email view
+            for (let i = columnIndex - 1; i >= 0; i--) {
+              const prevColCards = getColumnCards(i)
+              if (prevColCards.length > 0) {
+                setCursor({ columnIndex: i, cardIndex: prevColCards.length - 1 })
+                break
+              }
+            }
+          }
           break
 
         // Tab: sequential navigation

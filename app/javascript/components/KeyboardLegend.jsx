@@ -11,7 +11,7 @@ const shortcuts = [
   { key: "d", desc: "Delete" },
   { key: "m/M", desc: "Move right/left" },
   { key: "Ctrl+hjkl", desc: "Move card" },
-  { key: "Shift+Tab", desc: "Toggle layout" },
+  { key: "v", desc: "Toggle layout" },
   { key: "?", desc: "Legend" },
 ]
 

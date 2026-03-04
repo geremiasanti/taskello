@@ -14,6 +14,7 @@ module Api
         comment = @card.comments.build(comment_params.merge(user: current_user))
         if comment.save
           create_mention_notifications(comment)
+          BoardChannel.broadcast_comment(@card.board, @card, comment, "created")
           render json: {
             id: comment.id, body: comment.body, created_at: comment.created_at,
             user: { id: current_user.id, username: current_user.username }
@@ -26,6 +27,7 @@ module Api
       def destroy
         comment = @card.comments.find(params[:id])
         if comment.user == current_user
+          BoardChannel.broadcast_board_update(@card.board, "comment_deleted", { card_id: @card.id, comment_id: comment.id })
           comment.destroy
           head :no_content
         else

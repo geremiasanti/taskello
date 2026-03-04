@@ -148,7 +148,7 @@ function renderPopup(el, component) {
 }
 
 const RichTextEditor = forwardRef(function RichTextEditor(
-  { content, onChange, onCtrlEnter, placeholder, members, toolbar = true, className = "", minHeight = "80px" },
+  { content, onChange, onCtrlEnter, placeholder, members, toolbar = true, className = "", minHeight = "80px", autoFocus = false },
   ref
 ) {
   const onCtrlEnterRef = useRef(onCtrlEnter)
@@ -187,6 +187,7 @@ const RichTextEditor = forwardRef(function RichTextEditor(
   const editor = useEditor({
     extensions,
     content: content || "",
+    autofocus: autoFocus ? "end" : false,
     onUpdate: ({ editor }) => {
       onChange?.(editor.getHTML())
     },

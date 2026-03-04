@@ -13,6 +13,8 @@ export const useUiStore = create((set, get) => ({
   cursor: { columnIndex: 0, cardIndex: 0 },
   cursorActive: false,
   newCardColumn: null,
+  filterLabels: [],
+  filterParticipants: [],
 
   setTheme: (theme) => {
     localStorage.setItem("taskello-theme", theme)
@@ -39,4 +41,15 @@ export const useUiStore = create((set, get) => ({
   deactivateCursor: () => set({ cursorActive: false }),
   setNewCardColumn: (col) => set({ newCardColumn: col }),
   clearNewCardColumn: () => set({ newCardColumn: null }),
+  toggleFilterLabel: (labelId) => set((s) => ({
+    filterLabels: s.filterLabels.includes(labelId)
+      ? s.filterLabels.filter((id) => id !== labelId)
+      : [...s.filterLabels, labelId]
+  })),
+  toggleFilterParticipant: (userId) => set((s) => ({
+    filterParticipants: s.filterParticipants.includes(userId)
+      ? s.filterParticipants.filter((id) => id !== userId)
+      : [...s.filterParticipants, userId]
+  })),
+  clearFilters: () => set({ filterLabels: [], filterParticipants: [] }),
 }))

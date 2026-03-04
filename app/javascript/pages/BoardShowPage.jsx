@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useBoardStore } from "../stores/boardStore"
 import { useCardStore } from "../stores/cardStore"
@@ -8,6 +8,7 @@ import EmailLayout from "../components/EmailLayout"
 import CardDetailModal from "../components/CardDetailModal"
 import MembersList from "../components/MembersList"
 import BoardForm from "../components/BoardForm"
+import CardFilter from "../components/CardFilter"
 import Button from "../components/ui/Button"
 import Modal from "../components/ui/Modal"
 import { useAuthStore } from "../stores/authStore"
@@ -29,6 +30,9 @@ export default function BoardShowPage() {
   const selectedCard = useCardStore((s) => s.selectedCard)
   const clearSelectedCard = useCardStore((s) => s.clearSelectedCard)
   const layout = useUiStore((s) => s.layout)
+  const filterLabels = useUiStore((s) => s.filterLabels)
+  const filterParticipants = useUiStore((s) => s.filterParticipants)
+  const clearFilters = useUiStore((s) => s.clearFilters)
   const user = useAuthStore((s) => s.user)
   const [showEdit, setShowEdit] = useState(false)
   const [showMembers, setShowMembers] = useState(false)
@@ -41,12 +45,40 @@ export default function BoardShowPage() {
 
   useEffect(() => {
     fetchBoard(id)
-    return () => setCurrentBoard(null)
+    return () => {
+      setCurrentBoard(null)
+      clearFilters()
+    }
   }, [id])
 
   useEffect(() => {
     if (board?.cards) setCards(board.cards)
   }, [board?.cards])
+
+  // Close open card when switching from email to kanban
+  useEffect(() => {
+    if (layout === "kanban" && selectedCard) clearSelectedCard()
+  }, [layout])
+
+  const applyFilters = useCallback((cardsList) => {
+    let filtered = cardsList
+    if (filterLabels.length > 0) {
+      filtered = filtered.filter((c) =>
+        c.labels?.some((l) => filterLabels.includes(l.id))
+      )
+    }
+    if (filterParticipants.length > 0) {
+      filtered = filtered.filter((c) =>
+        c.participants?.some((p) => filterParticipants.includes(p.id))
+      )
+    }
+    return filtered
+  }, [filterLabels, filterParticipants])
+
+  const columnCards = useCallback((col) => {
+    const colCards = cards.filter((c) => c.column === col).sort((a, b) => a.position - b.position)
+    return applyFilters(colCards)
+  }, [cards, applyFilters])
 
   if (!board) {
     return <div className="p-8 text-[var(--color-text-secondary)]">Loading board...</div>
@@ -61,29 +93,25 @@ export default function BoardShowPage() {
     }
   }
 
-  const columnCards = (col) => cards.filter((c) => c.column === col).sort((a, b) => a.position - b.position)
-
   return (
     <div className="flex flex-col h-[calc(100vh-3rem)]">
       <div className="px-5 py-3 border-b border-[var(--color-border)] bg-[var(--color-bg)]">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div>
-              <h1 className="text-lg font-bold text-[var(--color-text)] leading-tight">{board.name}</h1>
-              {board.description && (
-                <p className="text-xs text-[var(--color-text-muted)] mt-0.5 max-w-lg truncate">{board.description}</p>
-              )}
-            </div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-bold text-[var(--color-text)] leading-tight">{board.name}</h1>
+            <CardFilter board={board} />
+          </div>
+          <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => setShowMembers(true)}>
               Members ({board.members?.length || 0})
             </Button>
+            {isCreator && (
+              <>
+                <Button variant="ghost" size="sm" onClick={() => setShowEdit(true)}>Edit</Button>
+                <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
+              </>
+            )}
           </div>
-          {isCreator && (
-            <div className="flex items-center gap-1">
-              <Button variant="ghost" size="sm" onClick={() => setShowEdit(true)}>Edit</Button>
-              <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
-            </div>
-          )}
         </div>
       </div>
 

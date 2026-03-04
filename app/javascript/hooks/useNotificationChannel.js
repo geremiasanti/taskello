@@ -1,12 +1,6 @@
 import { useEffect } from "react"
 import { useNotificationStore } from "../stores/notificationStore"
-import { createConsumer } from "@rails/actioncable"
-
-let consumer = null
-function getConsumer() {
-  if (!consumer) consumer = createConsumer()
-  return consumer
-}
+import { getConsumer } from "../lib/consumer"
 
 export default function useNotificationChannel(userId) {
   useEffect(() => {

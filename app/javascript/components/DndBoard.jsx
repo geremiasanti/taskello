@@ -59,8 +59,11 @@ function DroppableColumn({ column, label, cards, board }) {
   return (
     <div ref={setNodeRef} className="flex-1 min-w-[280px] max-w-[400px] flex flex-col bg-[var(--color-column-bg)] rounded-lg border border-[var(--color-border-subtle)] overflow-hidden">
       <div className="flex items-center justify-between px-3 py-2.5 border-b border-[var(--color-border-subtle)] shrink-0">
-        <h3 className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
-          {label} <span className="text-[var(--color-text-muted)] font-normal">{cards.length}</span>
+        <h3 className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide flex items-center">
+          {label}
+          <span className="ml-1.5 inline-flex items-center justify-center px-1.5 min-w-[20px] h-5 text-[11px] font-medium rounded-full bg-[var(--color-bg-tertiary)] text-[var(--color-text-muted)]">
+            {cards.length}
+          </span>
         </h3>
         <Button variant="ghost" size="sm" onClick={() => setShowForm(!showForm)}>+</Button>
       </div>

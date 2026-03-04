@@ -1,3 +1,9 @@
+# Reset all sequences so IDs start from 1
+ActiveRecord::Base.connection.tables.each do |table|
+  next if table == "schema_migrations" || table == "ar_internal_metadata"
+  ActiveRecord::Base.connection.reset_pk_sequence!(table)
+end
+
 AVATARS_DIR = Rails.root.join("db", "seed_avatars")
 
 AVATAR_FILES = {

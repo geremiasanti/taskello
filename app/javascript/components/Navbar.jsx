@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useCallback } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuthStore } from "../stores/authStore"
 import { useBoardStore } from "../stores/boardStore"
@@ -6,6 +6,7 @@ import { useUiStore } from "../stores/uiStore"
 import Avatar from "./ui/Avatar"
 import NotificationBell from "./NotificationBell"
 import ThemeSwitcher from "./ThemeSwitcher"
+import useClickOutside from "../hooks/useClickOutside"
 
 // Trello-style board icon (3 columns)
 const TrelloIcon = () => (
@@ -48,6 +49,7 @@ export default function Navbar() {
   const board = useBoardStore((s) => s.currentBoard)
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useClickOutside(useCallback(() => setMenuOpen(false), []))
 
   const handleLogout = async () => {
     await logout()
@@ -68,12 +70,16 @@ export default function Navbar() {
         )}
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5">
         <LayoutToggle />
         <ThemeSwitcher />
         <NotificationBell />
-        <div className="relative ml-1">
-          <button onClick={() => setMenuOpen(!menuOpen)} className="flex items-center gap-2 cursor-pointer">
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer
+              border border-[var(--color-border)] hover:shadow-md hover:bg-white/10 transition-shadow"
+          >
             <Avatar user={user} size="sm" />
             <span className="text-sm hidden sm:inline">{user?.username}</span>
           </button>

@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import api from "../lib/api"
+import { resetConsumer } from "../lib/consumer"
 
 export const useAuthStore = create((set) => ({
   user: null,
@@ -28,6 +29,7 @@ export const useAuthStore = create((set) => ({
 
   logout: async () => {
     await api.delete("/logout")
+    resetConsumer()
     set({ user: null })
   },
 }))

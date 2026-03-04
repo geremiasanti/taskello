@@ -11,7 +11,7 @@ export default function CardPreview({ card }) {
     <div
       onClick={() => selectCard(card)}
       className="card-preview p-3 rounded-md border border-[var(--color-border)] bg-[var(--color-card-bg)]
-        cursor-pointer transition-shadow shadow-sm"
+        cursor-pointer transition-shadow shadow-md hover:shadow-lg"
       data-card-id={card.id}
     >
       {card.labels && card.labels.length > 0 && (

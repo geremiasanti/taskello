@@ -18,15 +18,24 @@ export default function Modal({ isOpen, onClose, title, children, wide = false }
           shadow-lg ${wide ? "w-full max-w-2xl" : "w-full max-w-md"} max-h-[80vh] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)]">
-          <h2 className="text-sm font-semibold text-[var(--color-text)]">{title}</h2>
+        {title ? (
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)]">
+            <h2 className="text-sm font-semibold text-[var(--color-text)]">{title}</h2>
+            <button
+              onClick={onClose}
+              className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] p-1 cursor-pointer"
+            >
+              &times;
+            </button>
+          </div>
+        ) : (
           <button
             onClick={onClose}
-            className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] p-1 cursor-pointer"
+            className="absolute top-2 right-2 z-10 text-[var(--color-text-muted)] hover:text-[var(--color-text)] p-1 cursor-pointer text-lg leading-none"
           >
             &times;
           </button>
-        </div>
+        )}
         <div className="p-4">{children}</div>
       </div>
     </div>
