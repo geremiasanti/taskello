@@ -2,16 +2,17 @@ import React from "react"
 import { useUiStore } from "../stores/uiStore"
 
 const shortcuts = [
-  { key: "h/l", desc: "Move between columns" },
-  { key: "j/k", desc: "Move between cards" },
-  { key: "Tab", desc: "Sequential navigation" },
-  { key: "Enter", desc: "Open card" },
-  { key: "Esc", desc: "Close card" },
+  { key: "h/l", desc: "Columns" },
+  { key: "j/k", desc: "Cards" },
+  { key: "Tab/S-Tab", desc: "Sequential" },
+  { key: "Enter", desc: "Open" },
+  { key: "Esc", desc: "Close / Back" },
   { key: "n", desc: "New card" },
-  { key: "d", desc: "Delete card" },
-  { key: "m/M", desc: "Move card right/left" },
-  { key: "Ctrl+hjkl", desc: "Move card (DnD)" },
-  { key: "?", desc: "Toggle this legend" },
+  { key: "d", desc: "Delete" },
+  { key: "m/M", desc: "Move right/left" },
+  { key: "Ctrl+hjkl", desc: "Move card" },
+  { key: "Ctrl+Tab", desc: "Toggle layout" },
+  { key: "?", desc: "Legend" },
 ]
 
 export default function KeyboardLegend() {
