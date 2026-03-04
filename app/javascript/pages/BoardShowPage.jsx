@@ -59,16 +59,18 @@ export default function BoardShowPage() {
     if (board?.cards) setCards(board.cards)
   }, [board?.cards])
 
-  // Close open card when switching from email to kanban
+  // Handle layout switch side effects
   useEffect(() => {
-    if (layout === "kanban" && selectedCard) clearSelectedCard()
-  }, [layout])
-
-  // When switching to email with a focused card, open its collapsed section
-  useEffect(() => {
-    if (layout === "email" && cursorActive && cursor.cardIndex >= 0) {
-      const col = ["todo", "doing", "done"][cursor.columnIndex]
-      if (col && collapsedColumns[col]) toggleCollapsedColumn(col)
+    if (layout === "kanban") {
+      // Close open card when switching to kanban
+      if (useCardStore.getState().selectedCard) clearSelectedCard()
+    } else {
+      // Switching to email: open collapsed section containing focused card
+      const { cursor: cur, cursorActive: active, collapsedColumns: cols } = useUiStore.getState()
+      if (active && cur.cardIndex >= 0) {
+        const col = ["todo", "doing", "done"][cur.columnIndex]
+        if (col && cols[col]) toggleCollapsedColumn(col)
+      }
     }
   }, [layout])
 
